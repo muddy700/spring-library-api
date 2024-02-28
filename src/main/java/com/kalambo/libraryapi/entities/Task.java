@@ -24,7 +24,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @Entity
 @Table(name = "tasks", indexes = {
-        @Index(name = "idx_title", columnList = "title")
+        @Index(name = "title_index", columnList = "title DESC", unique = true),
+        @Index(name = "duration_index", columnList = "max_duration")
 })
 
 public class Task {
@@ -36,7 +37,7 @@ public class Task {
     @Column(length = 100, unique = true)
     private String title;
 
-    @Column(name = "max_duration")
+    @Column(name = "max_duration", nullable = false)
     private Integer maxDuration;
 
     @Column(name = "is_public", columnDefinition = "boolean default false")
