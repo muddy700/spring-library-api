@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 
 import com.kalambo.libraryapi.responses.ErrorResponse;
@@ -20,6 +21,7 @@ public class GlobalExceptionHandler {
     // TODO: Handle ==> IllegalArgumentException
 
     @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ErrorResponse> handleNotFoundExceptions(ResourceNotFoundException ex, WebRequest request) {
 
         return new ResponseEntity<ErrorResponse>(getErrorObject(ex, request), HttpStatus.NOT_FOUND);
