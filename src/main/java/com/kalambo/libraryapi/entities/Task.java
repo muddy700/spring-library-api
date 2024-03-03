@@ -34,7 +34,7 @@ public class Task {
     @Column(insertable = false, updatable = false)
     private Integer id;
 
-    @Column(length = 100, unique = true)
+    @Column(length = 100, unique = true, nullable = false)
     private String title;
 
     @Column(name = "max_duration", nullable = false)

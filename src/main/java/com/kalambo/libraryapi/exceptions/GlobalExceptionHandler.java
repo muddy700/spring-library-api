@@ -10,6 +10,9 @@ import org.springframework.web.context.request.WebRequest;
 
 import com.kalambo.libraryapi.responses.ErrorResponse;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
     // TODO: Handle ==> @ExceptionHandler(Exception.class)
@@ -23,8 +26,11 @@ public class GlobalExceptionHandler {
     }
 
     public ErrorResponse getErrorObject(Exception ex, WebRequest request) {
-        return new ErrorResponse()
+        ErrorResponse errorDetails = new ErrorResponse()
                 .setTime(new Date()).setMessage(ex.getMessage())
                 .setUrl(request.getDescription(false).substring(4));
+
+        log.error(errorDetails.getMessage());
+        return errorDetails;
     }
 }

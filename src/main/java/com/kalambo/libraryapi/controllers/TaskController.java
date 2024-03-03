@@ -15,11 +15,14 @@ import com.kalambo.libraryapi.dtos.UpdateTaskDto;
 import com.kalambo.libraryapi.entities.Task;
 import com.kalambo.libraryapi.services.TaskService;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/tasks")
 public class TaskController {
@@ -29,24 +32,32 @@ public class TaskController {
 
     @PostMapping
     public ResponseEntity<Task> createTask(@RequestBody CreateTaskDto payload) {
+        log.info("POST - /api/v1/tasks");
         Task createdTask = taskService.create(payload.toEntity());
+
         return new ResponseEntity<Task>(createdTask, HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<List<Task>> getAllTasks() {
+        log.info("GET - /api/v1/tasks");
         List<Task> allTaks = taskService.getAll();
+
         return ResponseEntity.ok(allTaks);
     }
 
     @GetMapping("{id}")
     public ResponseEntity<Task> getTaskById(@PathVariable("id") Integer taskId) {
+        log.info("GET - /api/v1/tasks/" + taskId);
         Task task = taskService.getById(taskId);
+
         return ResponseEntity.ok(task);
     }
 
     @PutMapping("{id}")
     public ResponseEntity<Task> updateTask(@PathVariable("id") Integer taskId, @RequestBody UpdateTaskDto payload) {
+        log.info("PUT - /api/v1/tasks/" + taskId);
+
         payload.setId(taskId);
         Task updatedTask = taskService.update(payload);
 
@@ -55,6 +66,8 @@ public class TaskController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteTaskById(@PathVariable("id") Integer taskId) {
+        log.warn("DELETE - /api/v1/tasks/" + taskId);
+
         taskService.delete(taskId);
         String message = "Task with ID: " + taskId + " deleted successful.";
 

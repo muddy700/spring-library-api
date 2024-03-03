@@ -1,56 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-  <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{35} - %msg%n"/>
+  <!-- Variables declaration -->
+  <property name="logsFolder" value="./logs" />
+  <property name="plainLogPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%logger{36}] : %msg%n" />
+  <property name="coloredLogPattern" value="%black(%d{yyyy-MM-dd HH:mm:ss.SSS}) %highlight(%-5level) [%yellow(%logger{36})] : %blue(%msg%n)" />
 
-  <appender name="server-console" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>%d - %-5level %logger{35} - %msg %n</pattern>
-    </encoder>
+  <!-- Append all logs to the console -->
+  <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder>
+        <pattern>${coloredLogPattern}</pattern>
+      </encoder>
   </appender>
 
-  <!-- Plain Text Rolling Appender for application info -->
-  <appender name="server-info" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${LOG_PATH}/demo.log</file>
+  <!-- Append info logs to the file -->
+  <appender name="serverInfo" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logsFolder}/info.log</file>
     <filter class="ch.qos.logback.classic.filter.LevelFilter">
       <level>INFO</level>
       <onMatch>ACCEPT</onMatch>
       <onMismatch>DENY</onMismatch>
     </filter>
-    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-      <pattern>${FILE_LOG_PATTERN}</pattern>
+    <encoder>
+      <pattern>${plainLogPattern}</pattern>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <fileNamePattern>${LOG_PATH}/archived/demo.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-      <maxFileSize>20MB</maxFileSize>
+      <!-- Rolling files daily. For monthly use yyyy-MM -->
+      <fileNamePattern>${logsFolder}/archived/info-logs/info.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <maxFileSize>15MB</maxFileSize>
+      <maxHistory>365</maxHistory>
     </rollingPolicy>
   </appender>
 
-  <!-- Plain Text Rolling Appender for application error -->
-  <appender name="server-error"
-    class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <append>true</append>
-    <file>${LOG_PATH}/demo-error.log</file>
+  <!-- Append warning logs to the file -->
+  <appender name="serverWarnings" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logsFolder}/warnings.log</file>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>WARN</level>
+      <onMatch>ACCEPT</onMatch>
+      <onMismatch>DENY</onMismatch>
+    </filter>
+    <encoder>
+      <pattern>${plainLogPattern}</pattern>
+    </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <!-- Rolling files monthly -->
+      <fileNamePattern>${logsFolder}/archived/warning-logs/warning.%d{yyyy-MM}.%i.log</fileNamePattern>
+      <maxFileSize>30MB</maxFileSize>
+      <maxHistory>12</maxHistory>
+    </rollingPolicy>
+  </appender>
+
+  <!-- Append error logs to the file -->
+  <appender name="serverErrors" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logsFolder}/errors.log</file>
     <filter class="ch.qos.logback.classic.filter.LevelFilter">
       <level>ERROR</level>
       <onMatch>ACCEPT</onMatch>
       <onMismatch>DENY</onMismatch>
     </filter>
     <encoder>
-      <pattern>${FILE_LOG_PATTERN}</pattern>
+      <pattern>${plainLogPattern}</pattern>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <fileNamePattern>${LOG_PATH}/demo.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
-      <maxFileSize>20MB</maxFileSize>
-      <maxHistory>15</maxHistory>
+      <!-- Rolling files daily. For monthly use yyyy-MM -->
+      <fileNamePattern>${logsFolder}/archived/error-logs/error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <maxFileSize>25MB</maxFileSize>
+      <maxHistory>365</maxHistory>
     </rollingPolicy>
   </appender>
 
-  <logger name="com.example" level="info">
-    <appender-ref ref="server-info" />
-    <appender-ref ref="server-error" />
-  </logger>
-
+  <!-- Shared settings for all appenders -->
   <root level="info">
-    <appender-ref ref="server-console" />
+    <appender-ref ref="console"/>
+    <appender-ref ref="serverInfo"/>
+    <appender-ref ref="serverWarnings"/>
+    <appender-ref ref="serverErrors"/>
   </root>
 </configuration>

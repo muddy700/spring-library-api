@@ -12,6 +12,6 @@ public class DatabaseSeeder {
 
     @EventListener
     public void runSeeders(ContextRefreshedEvent event) {
-        taskSeeder.seed();
+        // taskSeeder.seed();
     }
 }
