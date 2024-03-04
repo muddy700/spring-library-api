@@ -9,10 +9,10 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-@NoArgsConstructor
 @AllArgsConstructor
-public class ErrorResponse {
-    private Date time;
-    private String url;
-    private String message;
+@NoArgsConstructor
+public class ITask {
+    private Integer id;
+    private String title;
+    private Date createdAt;
 }

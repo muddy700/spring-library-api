@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 
-import com.kalambo.libraryapi.responses.ErrorResponse;
+import com.kalambo.libraryapi.responses.IError;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,13 +22,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ErrorResponse> handleNotFoundExceptions(ResourceNotFoundException ex, WebRequest request) {
+    public ResponseEntity<IError> handleNotFoundExceptions(ResourceNotFoundException ex, WebRequest request) {
 
-        return new ResponseEntity<ErrorResponse>(getErrorObject(ex, request), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<IError>(formatError(ex, request), HttpStatus.NOT_FOUND);
     }
 
-    public ErrorResponse getErrorObject(Exception ex, WebRequest request) {
-        ErrorResponse errorDetails = new ErrorResponse()
+    public IError formatError(Exception ex, WebRequest request) {
+        IError errorDetails = new IError()
                 .setTime(new Date()).setMessage(ex.getMessage())
                 .setUrl(request.getDescription(false).substring(4));
 

@@ -2,17 +2,18 @@ package com.kalambo.libraryapi.services;
 
 import java.util.List;
 
+import com.kalambo.libraryapi.dtos.TaskDto;
 import com.kalambo.libraryapi.dtos.UpdateTaskDto;
-import com.kalambo.libraryapi.entities.Task;
+import com.kalambo.libraryapi.responses.ITask;
 
 public interface TaskService {
-    Task create(Task task);
+    ITask create(TaskDto taskDto);
 
-    List<Task> getAll();
+    List<ITask> getAll();
 
-    Task getById(Integer taskId);
+    ITask getById(Integer taskId);
 
-    Task update(UpdateTaskDto task);
+    ITask update(UpdateTaskDto task);
 
     void delete(Integer taskId);
 }
