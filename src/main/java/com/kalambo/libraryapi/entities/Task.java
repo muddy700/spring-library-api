@@ -40,8 +40,14 @@ public class Task {
     @Column(name = "max_duration", nullable = false)
     private Integer maxDuration;
 
-    @Column(name = "is_public", columnDefinition = "boolean default false")
-    private boolean isPublic;
+    @Column(nullable = false)
+    private String authorName;
+
+    @Column(nullable = false)
+    private String authorEmail;
+
+    @Column(name = "published", columnDefinition = "boolean default false")
+    private boolean published;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

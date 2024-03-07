@@ -17,19 +17,35 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.kalambo.libraryapi.responses.IError;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // TODO: Remember to handle the following
-    // ValidationException, SQLException, EntityNotFoundException,
-    // NoSuchElementException, IllegalArgumentException, Duplicated Resource
+    // ValidationException, SQLException, EntityNotFoundException
+    // NoSuchElementException, IllegalArgumentException, Duplicated(Integri vi)
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public final ResponseEntity<IError> handleNotFoundException(ResourceNotFoundException ex, WebRequest request) {
         return finalResult(ex, request, HttpStatus.NOT_FOUND, "Resource not found");
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public final ResponseEntity<IError> handleConstraintViolation(ConstraintViolationException ex, WebRequest request) {
+        IError errorInfo = formatError(ex, request, "Constraint violation")
+                .setDescription("Make some changes in the field(s) listed below and try again");
+
+        // TODO: Find a better way to extract field-name from the string
+        for (ConstraintViolation violation : ex.getConstraintViolations()) {
+            errorInfo.addValidationError(violation.getPropertyPath().toString(), violation.getMessage());
+        }
+
+        return finalResult(errorInfo, HttpStatus.BAD_REQUEST);
     }
 
     // TODO: Review the description returned and modify to hide db info
@@ -65,7 +81,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .setTimestamp(new Date()).setDescription(ex.getMessage())
                 .setPath(request.getDescription(false).substring(4));
 
-        log.error(title + " :: " + errorDetails.getDescription() + " ==> ", ex);
+        if (title.equals("Unknown error occured"))
+            log.error(title + " :: " + errorDetails.getDescription() + " ==> ", ex);
+        else
+            log.error(title + " :: " + errorDetails.getDescription());
+
         return errorDetails;
     }
 

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.TaskDto;
-import com.kalambo.libraryapi.dtos.UpdateTaskDto;
 import com.kalambo.libraryapi.entities.Task;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
 import com.kalambo.libraryapi.mappers.TaskMapper;
@@ -51,7 +50,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public ITask update(UpdateTaskDto task) {
+    public ITask update(TaskDto task) {
         return taskMapper.map(taskRepository.save(updateTaskPayload(task)));
     }
 
@@ -63,7 +62,7 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.deleteById(task.getId());
     }
 
-    Task updateTaskPayload(UpdateTaskDto payload) {
+    Task updateTaskPayload(TaskDto payload) {
         // Ensure task is present or throw 404
         getById(payload.getId());
 
