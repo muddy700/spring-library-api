@@ -23,6 +23,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +32,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 @Tag(name = "Task", description = "Manage user tasks.")
 @Slf4j
 @Validated
+// TODO: Use spring security to handle crossOriginn globally.
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/v1/tasks")
 public class TaskController {
