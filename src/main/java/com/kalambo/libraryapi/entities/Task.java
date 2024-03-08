@@ -3,6 +3,8 @@ package com.kalambo.libraryapi.entities;
 import java.util.Date;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
@@ -27,6 +29,10 @@ import lombok.experimental.Accessors;
         @Index(name = "title_index", columnList = "title DESC", unique = true),
         @Index(name = "duration_index", columnList = "max_duration")
 })
+
+@SQLRestriction("deleted = false")
+// @SQLRestriction( "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE tasks SET deleted = true, deleted_at = NOW() WHERE id = ?")
 
 public class Task {
     @Id
@@ -56,4 +62,7 @@ public class Task {
     @UpdateTimestamp
     @Column(nullable = false)
     private Date updatedAt;
+
+    private Boolean deleted = Boolean.FALSE;
+    private Date deletedAt;
 }

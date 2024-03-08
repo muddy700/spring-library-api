@@ -59,6 +59,7 @@ public class TaskServiceImpl implements TaskService {
         // Ensure task is present or throw 404
         ITask task = getById(taskId);
 
+        // TODO: Delete all relational data here (if any)
         taskRepository.deleteById(task.getId());
     }
 
