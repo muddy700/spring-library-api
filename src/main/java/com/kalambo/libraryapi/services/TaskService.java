@@ -12,6 +12,8 @@ public interface TaskService {
 
     ITask getById(Integer taskId);
 
+    ITask getByTitle(String title);
+
     ITask update(TaskDto task);
 
     void delete(Integer taskId);

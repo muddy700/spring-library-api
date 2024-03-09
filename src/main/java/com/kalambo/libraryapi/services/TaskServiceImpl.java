@@ -50,6 +50,16 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public ITask getByTitle(String title) {
+        String errorMessage = "No task found with title: " + title;
+
+        Task taskInfo = taskRepository.findByTitle(title).orElseThrow(
+                () -> new ResourceNotFoundException(errorMessage));
+
+        return taskMapper.map(taskInfo);
+    }
+
+    @Override
     public ITask update(TaskDto task) {
         return taskMapper.map(taskRepository.save(updateTaskPayload(task)));
     }
