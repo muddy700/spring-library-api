@@ -1,19 +1,21 @@
 package com.kalambo.libraryapi.controllers;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kalambo.libraryapi.dtos.TaskDto;
 import com.kalambo.libraryapi.dtos.groups.OnCreate;
 import com.kalambo.libraryapi.dtos.groups.OnUpdate;
+import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.ITask;
 import com.kalambo.libraryapi.services.TaskService;
 
@@ -53,11 +55,11 @@ public class TaskController {
 
     @GetMapping
     @Operation(summary = "Retrieve all tasks.", description = "Some description.")
-    public ResponseEntity<List<ITask>> getAllTasks() {
+    public ResponseEntity<IPage<ITask>> getAllTasks(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         log.info("GET - /api/v1/tasks");
-        List<ITask> allTaks = taskService.getAll();
 
-        return ResponseEntity.ok(allTaks);
+        return ResponseEntity.ok(taskService.getAll(PageRequest.of(page, size)));
     }
 
     @GetMapping("{id}")

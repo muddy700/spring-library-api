@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.TaskDto;
@@ -11,6 +13,7 @@ import com.kalambo.libraryapi.entities.Task;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
 import com.kalambo.libraryapi.mappers.TaskMapper;
 import com.kalambo.libraryapi.repositories.TaskRepository;
+import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.ITask;
 
 @Service
@@ -27,16 +30,10 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<ITask> getAll() {
-        // TODO: Improve the mapping logic.
-        List<ITask> response = new ArrayList<ITask>();
-        List<Task> tasks = taskRepository.findAll();
+    public IPage<ITask> getAll(Pageable pageable) {
+        Page<Task> taskPage = taskRepository.findAll(pageable);
 
-        for (Task task : tasks) {
-            response.add(taskMapper.map(task));
-        }
-
-        return response;
+        return formatResponse(taskPage);
     }
 
     @Override
@@ -73,7 +70,7 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.deleteById(task.getId());
     }
 
-    Task updateTaskPayload(TaskDto payload) {
+    private Task updateTaskPayload(TaskDto payload) {
         // Ensure task is present or throw 404
         getById(payload.getId());
 
@@ -88,5 +85,20 @@ public class TaskServiceImpl implements TaskService {
             taskInfo.setMaxDuration(payload.getMaxDuration());
 
         return taskInfo;
+    }
+
+    // TODO: Create a global utility function for this operation
+    private IPage<ITask> formatResponse(Page<Task> taskPage) {
+        List<ITask> contents = new ArrayList<ITask>(taskPage.getSize());
+
+        for (Task task : taskPage.getContent()) {
+            contents.add(taskMapper.map(task));
+        }
+
+        IPage<ITask> response = new IPage<ITask>().setItems(contents)
+                .setTotalPages(taskPage.getTotalPages()).setCurrentPage(taskPage.getNumber())
+                .setTotalItems(taskPage.getTotalElements()).setCurrentSize(taskPage.getSize());
+
+        return response;
     }
 }

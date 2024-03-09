@@ -1,14 +1,15 @@
 package com.kalambo.libraryapi.services;
 
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 import com.kalambo.libraryapi.dtos.TaskDto;
+import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.ITask;
 
 public interface TaskService {
     ITask create(TaskDto taskDto);
 
-    List<ITask> getAll();
+    IPage<ITask> getAll(Pageable pageable);
 
     ITask getById(Integer taskId);
 
