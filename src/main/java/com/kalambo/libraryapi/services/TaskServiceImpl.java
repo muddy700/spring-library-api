@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.kalambo.libraryapi.dtos.MailDto;
 import com.kalambo.libraryapi.dtos.TaskDto;
 import com.kalambo.libraryapi.entities.Task;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
@@ -24,15 +25,21 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     TaskMapper taskMapper;
 
+    @Autowired
+    MailService mailService;
+
     @Override
     public ITask create(TaskDto taskDto) {
-        return taskMapper.map(taskRepository.save(taskDto.toEntity()));
+        Task task = taskRepository.save(taskDto.toEntity());
+
+        // notifyAuthor(task);
+        return taskMapper.map(task);
     }
 
     @Override
     public IPage<ITask> getAll(Pageable pageable) {
         Page<Task> taskPage = taskRepository.findAll(pageable);
-
+        // globalUtil.formatResponse(taskPage);
         return formatResponse(taskPage);
     }
 
@@ -100,5 +107,16 @@ public class TaskServiceImpl implements TaskService {
                 .setTotalItems(taskPage.getTotalElements()).setCurrentSize(taskPage.getSize());
 
         return response;
+    }
+
+    private void notifyAuthor(Task task) {
+        String message = "Hellow " + task.getAuthorName() + ", \n \n";
+        message += "Your task with title: '" + task.getTitle() + "', created successfully.";
+
+        MailDto mailPayload = new MailDto()
+                .setSubject("Task Creation Notification")
+                .setRecipient(task.getAuthorEmail()).setBody(message);
+
+        mailService.sendNewMail(mailPayload);
     }
 }

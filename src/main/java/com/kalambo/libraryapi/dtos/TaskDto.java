@@ -28,7 +28,7 @@ public class TaskDto {
     private Integer id;
 
     @NotBlank(groups = { OnCreate.class, OnUpdate.class }, message = "Task title is required")
-    @Size(groups = { OnCreate.class, OnUpdate.class }, min = 5, max = 20)
+    @Size(groups = { OnCreate.class, OnUpdate.class }, min = 5, max = 100)
     private String title;
 
     @NotNull(groups = { OnCreate.class, OnUpdate.class }, message = "Task duration is required")
