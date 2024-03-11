@@ -1,0 +1,19 @@
+{
+	"properties": [
+		{
+			"name": "beem.sms.api-url",
+			"type": "java.lang.String",
+			"description": "API provided by beem for sending sms"
+		},
+		{
+			"name": "beem.sms.api-key",
+			"type": "java.lang.String",
+			"description": "Username to use with beem sms API"
+		},
+		{
+			"name": "beem.sms.api-secret",
+			"type": "java.lang.String",
+			"description": "Password to use with beem sms API"
+		}
+	]
+}

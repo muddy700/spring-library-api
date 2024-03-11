@@ -34,6 +34,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return finalResult(ex, request, HttpStatus.NOT_FOUND, "Resource not found");
     }
 
+    @ExceptionHandler(ExternalAPIException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public final ResponseEntity<IError> handleExternalAPIException(ExternalAPIException ex, WebRequest request) {
+        return finalResult(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, "Failed to call external api");
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public final ResponseEntity<IError> handleConstraintViolation(ConstraintViolationException ex, WebRequest request) {

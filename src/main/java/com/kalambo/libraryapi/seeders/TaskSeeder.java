@@ -20,6 +20,7 @@ public class TaskSeeder {
      *  ! Use repositories only for Read operations and
      *  Services for other operations(Create, Update and Delete)
      */
+    // TODO: Use try-catch in email service and in seeders,
 
     @Autowired
     TaskService taskService;

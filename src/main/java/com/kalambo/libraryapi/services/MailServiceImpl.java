@@ -11,6 +11,7 @@ import com.kalambo.libraryapi.dtos.MailDto;
 public class MailServiceImpl implements MailService {
     @Autowired
     private JavaMailSender mailSender;
+    // TODO: Use try-catch in email service and in seeders,
 
     @Override
     public void sendNewMail(MailDto mailDto) {

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.MailDto;
+import com.kalambo.libraryapi.dtos.SmsDto;
 import com.kalambo.libraryapi.dtos.TaskDto;
 import com.kalambo.libraryapi.entities.Task;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
@@ -28,11 +29,14 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     MailService mailService;
 
+    @Autowired
+    SmsService smsService;
+
     @Override
     public ITask create(TaskDto taskDto) {
         Task task = taskRepository.save(taskDto.toEntity());
 
-        // notifyAuthor(task);
+        // notifyAuthorByEmail(task);
         return taskMapper.map(task);
     }
 
@@ -50,6 +54,7 @@ public class TaskServiceImpl implements TaskService {
         Task taskInfo = taskRepository.findById(taskId).orElseThrow(
                 () -> new ResourceNotFoundException(errorMessage));
 
+        // notifyAuthorBySms(taskInfo);
         return taskMapper.map(taskInfo);
     }
 
@@ -109,7 +114,7 @@ public class TaskServiceImpl implements TaskService {
         return response;
     }
 
-    private void notifyAuthor(Task task) {
+    private void notifyAuthorByEmail(Task task) {
         String message = "Hellow " + task.getAuthorName() + ", \n \n";
         message += "Your task with title: '" + task.getTitle() + "', created successfully.";
 
@@ -118,5 +123,19 @@ public class TaskServiceImpl implements TaskService {
                 .setRecipient(task.getAuthorEmail()).setBody(message);
 
         mailService.sendNewMail(mailPayload);
+    }
+
+    private void notifyAuthorBySms(Task task) {
+        String[] numbers = { "255717963697", "255788387525", "255718793810" };
+        String message = "Hellow " + task.getAuthorName() + ", we're testing.";
+
+        SmsDto smsDto = new SmsDto().setMessage(message)
+                .setSource_addr("INFO").setEncoding(0);
+
+        for (int i = 0; i < numbers.length; i++) {
+            smsDto.addRecipient((i + 1), numbers[i]);
+        }
+
+        smsService.send(smsDto);
     }
 }
