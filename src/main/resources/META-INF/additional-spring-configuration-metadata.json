@@ -14,6 +14,21 @@
 			"name": "beem.sms.api-secret",
 			"type": "java.lang.String",
 			"description": "Password to use with beem sms API"
+		},
+		{
+			"name": "scheduler.fixed.delay",
+			"type": "java.lang.String",
+			"description": "Interval to use with fixedDelay scheduled methods"
+		},
+		{
+			"name": "scheduler.fixed.rate",
+			"type": "java.lang.String",
+			"description": "Interval to use with fixedRate scheduled methods"
+		},
+		{
+			"name": "scheduler.cron.interval",
+			"type": "java.lang.String",
+			"description": "Interval to use with scheduled methods in UNIX style cron-like expression"
 		}
 	]
 }
