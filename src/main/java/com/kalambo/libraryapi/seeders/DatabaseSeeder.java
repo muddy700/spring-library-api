@@ -6,9 +6,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class DatabaseSeeder {
     @Autowired
-    TaskSeeder taskSeeder;
+    private TaskSeeder taskSeeder;
+
+    @Autowired
+    private PermissionSeeder permissionSeeder;
 
     public void runSeeders() {
         taskSeeder.seed();
+        permissionSeeder.seed();
     }
 }
