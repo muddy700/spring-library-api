@@ -1,11 +1,7 @@
 package com.kalambo.libraryapi.services;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +13,7 @@ import com.kalambo.libraryapi.mappers.TaskMapper;
 import com.kalambo.libraryapi.repositories.TaskRepository;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.ITask;
+import com.kalambo.libraryapi.utilities.PageMapper;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -29,6 +26,9 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     private ApplicationEventPublisher publisher;
 
+    @Autowired
+    private PageMapper<Task, ITask> pageMapper;
+
     @Override
     public ITask create(TaskDto taskDto) {
         Task task = taskRepository.save(taskDto.toEntity());
@@ -39,9 +39,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public IPage<ITask> getAll(Pageable pageable) {
-        Page<Task> taskPage = taskRepository.findAll(pageable);
-        // globalUtil.formatResponse(taskPage);
-        return formatResponse(taskPage);
+        return pageMapper.paginate(taskRepository.findAll(pageable));
     }
 
     @Override
@@ -93,20 +91,5 @@ public class TaskServiceImpl implements TaskService {
             taskInfo.setMaxDuration(payload.getMaxDuration());
 
         return taskInfo;
-    }
-
-    // TODO: Create a global utility function for this operation
-    private IPage<ITask> formatResponse(Page<Task> taskPage) {
-        List<ITask> contents = new ArrayList<ITask>(taskPage.getSize());
-
-        for (Task task : taskPage.getContent()) {
-            contents.add(taskMapper.map(task));
-        }
-
-        IPage<ITask> response = new IPage<ITask>().setItems(contents)
-                .setTotalPages(taskPage.getTotalPages()).setCurrentPage(taskPage.getNumber())
-                .setTotalItems(taskPage.getTotalElements()).setCurrentSize(taskPage.getSize());
-
-        return response;
     }
 }

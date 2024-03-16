@@ -56,16 +56,16 @@ public class PermissionSeeder {
         List<ActionDto> actions = new ArrayList<ActionDto>();
 
         // Add resources/entities that need permission for 'Create' operation.
-        String[] creatableResources = { "Task" };
+        String[] creatableResources = { "Task", "Role", "User" };
 
         // Add resources/entities that need permission for 'Read' operation.
-        String[] viewableResources = { "Task", "Permission" };
+        String[] viewableResources = { "Task", "Permission", "Role", "User" };
 
         // Add resources/entities that need permission for 'Update' operation.
-        String[] updatebleResources = { "Task" };
+        String[] updatebleResources = { "Task", "Role", "User" };
 
         // Add resources/entities that need permission for 'Delete' operation.
-        String[] deletableResources = { "Task" };
+        String[] deletableResources = { "Task", "Role", "User" };
 
         // Link CRUD operations with their applicable resources, as listed above.
         // For 'Create' operation.
