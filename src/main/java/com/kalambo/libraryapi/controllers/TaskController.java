@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 @Tag(name = "Task", description = "Manage user tasks.")
 @Slf4j
 @Validated
-// TODO: Use spring security to handle crossOriginn globally.
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/v1/tasks")

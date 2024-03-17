@@ -11,8 +11,14 @@ public class DatabaseSeeder {
     @Autowired
     private PermissionSeeder permissionSeeder;
 
+    @Autowired
+    private RoleSeeder roleSeeder;
+
     public void runSeeders() {
         taskSeeder.seed();
+
         permissionSeeder.seed();
+
+        roleSeeder.seed();
     }
 }

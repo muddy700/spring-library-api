@@ -8,8 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.kalambo.libraryapi.entities.Permission;
+import com.kalambo.libraryapi.entities.Role;
 import com.kalambo.libraryapi.entities.Task;
 import com.kalambo.libraryapi.mappers.PermissionMapper;
+import com.kalambo.libraryapi.mappers.RoleMapper;
 import com.kalambo.libraryapi.mappers.TaskMapper;
 import com.kalambo.libraryapi.responses.IPage;
 
@@ -29,6 +31,9 @@ public class PageMapper<T1, T2> {
 
     @Autowired
     private PermissionMapper permissionMapper;
+
+    @Autowired
+    private RoleMapper roleMapper;
 
     public IPage<T2> paginate(Page<T1> entityPage) {
         List<T2> contents = new ArrayList<T2>(entityPage.getSize());
@@ -50,6 +55,9 @@ public class PageMapper<T1, T2> {
 
         else if (entity.getClass().equals(Permission.class))
             result = (T2) permissionMapper.map((Permission) entity);
+
+        else if (entity.getClass().equals(Role.class))
+            result = (T2) roleMapper.map((Role) entity);
 
         return result;
     }
