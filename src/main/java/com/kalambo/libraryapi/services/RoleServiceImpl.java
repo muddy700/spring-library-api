@@ -10,11 +10,11 @@ import com.kalambo.libraryapi.dtos.RoleDto;
 import com.kalambo.libraryapi.dtos.UpdateRoleDto;
 import com.kalambo.libraryapi.entities.Role;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
+import com.kalambo.libraryapi.mappers.PageMapper;
 import com.kalambo.libraryapi.mappers.RoleMapper;
 import com.kalambo.libraryapi.repositories.RoleRepository;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IRole;
-import com.kalambo.libraryapi.utilities.PageMapper;
 
 @Service
 public class RoleServiceImpl implements RoleService {

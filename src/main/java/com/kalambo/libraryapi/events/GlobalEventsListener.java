@@ -39,4 +39,10 @@ public class GlobalEventsListener {
         // smsNotifier.onTaskCreation(event.getPayload());
         // emailNotifier.onTaskCreation(event.getPayload());
     }
+
+    @Async
+    @EventListener
+    public void onUserCreation(UserCreatedEvent event) {
+        emailNotifier.onUserCreation(event.getPayload());
+    }
 }

@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.PermissionDto;
 import com.kalambo.libraryapi.entities.Permission;
+import com.kalambo.libraryapi.mappers.PageMapper;
 import com.kalambo.libraryapi.repositories.PermissionRepository;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IPermission;
-import com.kalambo.libraryapi.utilities.PageMapper;
 
 @Service
 public class PermissionServiceImpl implements PermissionService {

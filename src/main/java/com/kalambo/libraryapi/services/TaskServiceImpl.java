@@ -9,11 +9,11 @@ import com.kalambo.libraryapi.dtos.TaskDto;
 import com.kalambo.libraryapi.entities.Task;
 import com.kalambo.libraryapi.events.TaskCreatedEvent;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
+import com.kalambo.libraryapi.mappers.PageMapper;
 import com.kalambo.libraryapi.mappers.TaskMapper;
 import com.kalambo.libraryapi.repositories.TaskRepository;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.ITask;
-import com.kalambo.libraryapi.utilities.PageMapper;
 
 @Service
 public class TaskServiceImpl implements TaskService {

@@ -20,6 +20,7 @@ public class UserDto {
     @Email(message = "Enter a valid email")
     private String email;
 
+    // TODO: Add pattern validator for phone numbers ie.. 255xxxxxxxxx
     @NotBlank(message = "Phone number is required")
     @Size(min = 12, max = 12)
     private String phoneNumber;

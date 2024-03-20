@@ -3,18 +3,20 @@ package com.kalambo.libraryapi.services;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.UserDto;
 import com.kalambo.libraryapi.dtos.UpdateUserDto;
 import com.kalambo.libraryapi.entities.User;
+import com.kalambo.libraryapi.events.UserCreatedEvent;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
+import com.kalambo.libraryapi.mappers.PageMapper;
 import com.kalambo.libraryapi.mappers.UserMapper;
 import com.kalambo.libraryapi.repositories.UserRepository;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IUser;
-import com.kalambo.libraryapi.utilities.PageMapper;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -27,10 +29,14 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PageMapper<User, IUser> pageMapper;
 
+    @Autowired
+    private ApplicationEventPublisher publisher;
+
     @Override
     public IUser create(UserDto userDto) {
         User user = userRepository.save(userDto.toEntity());
 
+        publisher.publishEvent(new UserCreatedEvent(user));
         return userMapper.map(user);
     }
 
