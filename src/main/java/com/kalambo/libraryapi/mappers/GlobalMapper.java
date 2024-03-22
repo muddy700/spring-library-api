@@ -3,6 +3,7 @@ package com.kalambo.libraryapi.mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.kalambo.libraryapi.entities.AuditTrail;
 import com.kalambo.libraryapi.entities.Book;
 import com.kalambo.libraryapi.entities.Permission;
 import com.kalambo.libraryapi.entities.Role;
@@ -35,6 +36,9 @@ public class GlobalMapper<T1, T2> {
     @Autowired
     private BookMapper bookMapper;
 
+    @Autowired
+    private AuditTrailMapper auditTrailMapper;
+
     @SuppressWarnings("unchecked")
     public T2 map(T1 entity) {
         T2 result = null;
@@ -53,6 +57,9 @@ public class GlobalMapper<T1, T2> {
 
         else if (entity.getClass().equals(Book.class))
             result = (T2) bookMapper.map((Book) entity);
+
+        else if (entity.getClass().equals(AuditTrail.class))
+            result = (T2) auditTrailMapper.map((AuditTrail) entity);
 
         return result;
     }
