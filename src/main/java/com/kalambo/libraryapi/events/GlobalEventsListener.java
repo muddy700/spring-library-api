@@ -45,4 +45,10 @@ public class GlobalEventsListener {
     public void onUserCreation(UserCreatedEvent event) {
         emailNotifier.onUserCreation(event.getPayload());
     }
+
+    @Async
+    @EventListener
+    public void onBookCreation(BookCreatedEvent event) {
+        emailNotifier.onBookCreation(event.getPayload());
+    }
 }

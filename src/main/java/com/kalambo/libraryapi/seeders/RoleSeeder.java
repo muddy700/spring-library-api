@@ -46,12 +46,11 @@ public class RoleSeeder {
         Optional<Role> optionalRole = roleRepository.findByName(payload.getName());
 
         if (optionalRole.isPresent()) {
-            log.info("Role with name: '" + payload.getName() + "', already exist.");
+            log.info("Role for System Administrators, already exist.");
             log.info("Roles seeding skipped, no new role(s) to add.");
-        }
-        else {
+        } else {
             roleService.create(payload);
-            log.info("Roles seeding completed, 'Admin' Role added.");
+            log.info("Roles seeding completed, a new role for System Administrators added.");
         }
     }
 }

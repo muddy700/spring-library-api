@@ -1,5 +1,6 @@
 package com.kalambo.libraryapi.services;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import com.kalambo.libraryapi.dtos.UserDto;
 import com.kalambo.libraryapi.dtos.UpdateUserDto;
 import com.kalambo.libraryapi.entities.User;
 import com.kalambo.libraryapi.events.UserCreatedEvent;
+import com.kalambo.libraryapi.exceptions.ResourceDuplicationException;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
 import com.kalambo.libraryapi.mappers.PageMapper;
 import com.kalambo.libraryapi.mappers.UserMapper;
@@ -34,6 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public IUser create(UserDto userDto) {
+        checkDuplication(userDto.getEmail());
         User user = userRepository.save(userDto.toEntity());
 
         publisher.publishEvent(new UserCreatedEvent(user));
@@ -77,8 +80,10 @@ public class UserServiceImpl implements UserService {
         User userInfo = userRepository.findById(payload.getId()).get();
 
         // Append all updatable fields here.
-        if (payload.getEmail() != null)
+        if (payload.getEmail() != null) {
+            checkDuplication(payload.getEmail());
             userInfo.setEmail(payload.getEmail());
+        }
 
         if (payload.getPhoneNumber() != null)
             userInfo.setPhoneNumber(payload.getPhoneNumber());
@@ -93,5 +98,13 @@ public class UserServiceImpl implements UserService {
             userInfo.setEnabled(payload.getEnabled());
 
         return userInfo;
+    }
+
+    private void checkDuplication(String email) {
+        String errorMessage = "User with email: " + email + ", already exist";
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isPresent())
+            throw new ResourceDuplicationException(errorMessage);
     }
 }

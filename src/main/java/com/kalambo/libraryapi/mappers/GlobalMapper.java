@@ -3,6 +3,7 @@ package com.kalambo.libraryapi.mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.kalambo.libraryapi.entities.Book;
 import com.kalambo.libraryapi.entities.Permission;
 import com.kalambo.libraryapi.entities.Role;
 import com.kalambo.libraryapi.entities.Task;
@@ -31,6 +32,9 @@ public class GlobalMapper<T1, T2> {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private BookMapper bookMapper;
+
     @SuppressWarnings("unchecked")
     public T2 map(T1 entity) {
         T2 result = null;
@@ -46,6 +50,9 @@ public class GlobalMapper<T1, T2> {
 
         else if (entity.getClass().equals(User.class))
             result = (T2) userMapper.map((User) entity);
+
+        else if (entity.getClass().equals(Book.class))
+            result = (T2) bookMapper.map((Book) entity);
 
         return result;
     }

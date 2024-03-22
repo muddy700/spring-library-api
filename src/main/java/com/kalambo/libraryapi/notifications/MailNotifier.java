@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.MailDto;
+import com.kalambo.libraryapi.entities.Book;
 import com.kalambo.libraryapi.entities.Task;
 import com.kalambo.libraryapi.entities.User;
 import com.kalambo.libraryapi.services.MailService;
@@ -26,5 +27,9 @@ public class MailNotifier {
 
     public void onUserCreation(User user) {
         // TODO: Notify user about the account creation and send them credentials here
+    }
+
+    public void onBookCreation(Book book) {
+        // TODO: Notify students about the new book added and send them link to view it
     }
 }

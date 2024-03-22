@@ -25,13 +25,19 @@ import lombok.extern.slf4j.Slf4j;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // TODO: Remember to handle the following
-    // ValidationException, SQLException, EntityNotFoundException
-    // NoSuchElementException, IllegalArgumentException, Duplicated(Integri vi)
+    // SQLException, EntityNotFoundException NoSuchElementException,
+    // IllegalArgumentException,
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public final ResponseEntity<IError> handleNotFoundException(ResourceNotFoundException ex, WebRequest request) {
         return finalResult(ex, request, HttpStatus.NOT_FOUND, "Resource not found");
+    }
+
+    @ExceptionHandler(ResourceDuplicationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public final ResponseEntity<IError> onDuplicationException(ResourceDuplicationException ex, WebRequest request) {
+        return finalResult(ex, request, HttpStatus.CONFLICT, "Resource duplication");
     }
 
     @ExceptionHandler(ExternalAPIException.class)
