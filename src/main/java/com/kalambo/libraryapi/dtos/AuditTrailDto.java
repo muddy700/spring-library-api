@@ -1,8 +1,11 @@
 package com.kalambo.libraryapi.dtos;
 
+import java.util.UUID;
+
 import com.kalambo.libraryapi.entities.AuditTrail;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +17,9 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuditTrailDto {
+    @NotNull(message = "User ID is required")
+    private UUID userId;
+
     @NotBlank(message = "Action is required")
     @Size(max = 20)
     private String action;

@@ -23,5 +23,6 @@ public class IAuditTrail {
     private String updatedValues;
     private String previousValues;
 
+    private IUser user;
     private Date createdAt;
 }

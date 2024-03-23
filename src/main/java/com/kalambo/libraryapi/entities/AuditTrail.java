@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +28,7 @@ import lombok.experimental.Accessors;
         @Index(name = "resource_name_index", columnList = "resource_name"),
         @Index(name = "resource_id_index", columnList = "resource_id"),
         @Index(name = "creation_index", columnList = "created_at"),
+        @Index(name = "user_index", columnList = "user_id"),
 })
 
 public class AuditTrail {
@@ -53,4 +55,8 @@ public class AuditTrail {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Date createdAt;
+
+    // Relationships
+    @ManyToOne(optional = false)
+    private User user;
 }

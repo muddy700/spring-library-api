@@ -83,5 +83,4 @@ public class User {
     // Relationships
     @ManyToOne(optional = false)
     private Role role;
-
 }
