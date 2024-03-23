@@ -14,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,6 +31,7 @@ import lombok.experimental.Accessors;
         @Index(name = "deleted_index", columnList = "deleted_at"),
         @Index(name = "phone_index", columnList = "phoneNumber", unique = true),
         @Index(name = "name_index", columnList = "fullName", unique = true),
+        @Index(name = "role_index", columnList = "role_id"),
 })
 
 @SQLRestriction("deleted_at IS NULL")
@@ -77,4 +79,9 @@ public class User {
     private Date updatedAt;
 
     private Date deletedAt;
+
+    // Relationships
+    @ManyToOne(optional = false)
+    private Role role;
+
 }

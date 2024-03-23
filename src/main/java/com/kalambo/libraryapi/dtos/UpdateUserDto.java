@@ -29,5 +29,6 @@ public class UpdateUserDto {
   @Size(min = 1, max = 1)
   private String gender;
 
+  private UUID roleId;
   private Boolean enabled;
 }

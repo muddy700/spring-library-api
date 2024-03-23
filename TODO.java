@@ -22,6 +22,9 @@
  * done in userServiceImpl before saving the records.
  * 
  * 6. Add implementations for all applicable events-handlers
+ * 
+ * 7. Add Mini versions of all response classes ie.. IRole extends IBaseRolefor
+ * optimization
  */
 
 // ! Warnings

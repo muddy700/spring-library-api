@@ -65,4 +65,9 @@ public class Task {
 
     private Boolean deleted = Boolean.FALSE;
     private Date deletedAt;
+
+    // Relationships sample
+    // @ManyToOne(optional = false)
+    // @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
+    // private Role role;
 }

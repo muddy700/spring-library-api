@@ -28,4 +28,5 @@ public class IUser {
     private Date createdAt;
     private Date updatedAt;
     private Date deletedAt;
+    private IRole role;
 }

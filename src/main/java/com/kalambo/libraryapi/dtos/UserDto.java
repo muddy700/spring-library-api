@@ -1,9 +1,12 @@
 package com.kalambo.libraryapi.dtos;
 
+import java.util.UUID;
+
 import com.kalambo.libraryapi.entities.User;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +27,9 @@ public class UserDto {
     @NotBlank(message = "Phone number is required")
     @Size(min = 12, max = 12)
     private String phoneNumber;
+
+    @NotNull(message = "Role ID is required")
+    private UUID roleId;
 
     @NotBlank(message = "Full name is required")
     @Size(min = 10, max = 50)

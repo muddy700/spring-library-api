@@ -10,18 +10,26 @@ import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.UserDto;
 import com.kalambo.libraryapi.dtos.UpdateUserDto;
+import com.kalambo.libraryapi.entities.Role;
 import com.kalambo.libraryapi.entities.User;
 import com.kalambo.libraryapi.events.UserCreatedEvent;
 import com.kalambo.libraryapi.exceptions.ResourceDuplicationException;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
 import com.kalambo.libraryapi.mappers.PageMapper;
 import com.kalambo.libraryapi.mappers.UserMapper;
+import com.kalambo.libraryapi.repositories.RoleRepository;
 import com.kalambo.libraryapi.repositories.UserRepository;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IUser;
 
 @Service
 public class UserServiceImpl implements UserService {
+    @Autowired
+    private RoleService roleService;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -37,7 +45,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public IUser create(UserDto userDto) {
         checkDuplication(userDto.getEmail());
-        User user = userRepository.save(userDto.toEntity());
+        User user = userRepository.save(userDto.toEntity().setRole(getRoleInfo(userDto.getRoleId())));
 
         publisher.publishEvent(new UserCreatedEvent(user));
         return userMapper.map(user);
@@ -97,6 +105,9 @@ public class UserServiceImpl implements UserService {
         if (payload.getEnabled() != null)
             userInfo.setEnabled(payload.getEnabled());
 
+        if (payload.getRoleId() != null)
+            userInfo.setRole(getRoleInfo(payload.getRoleId()));
+
         return userInfo;
     }
 
@@ -106,5 +117,12 @@ public class UserServiceImpl implements UserService {
 
         if (optionalUser.isPresent())
             throw new ResourceDuplicationException(errorMessage);
+    }
+
+    private Role getRoleInfo(UUID roleId) {
+        // Ensure role is present or throw 404
+        roleService.getById(roleId);
+
+        return roleRepository.findById(roleId).get();
     }
 }
