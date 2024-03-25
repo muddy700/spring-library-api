@@ -1,6 +1,7 @@
 package com.kalambo.libraryapi.responses;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -16,7 +17,10 @@ public class IRole {
     private UUID id;
     private String name;
     private String description;
+
     private Boolean active;
+    List<IPermission> permissions;
+
     private Date createdAt;
     private Date updatedAt;
     private Date deletedAt;

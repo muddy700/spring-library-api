@@ -12,6 +12,7 @@ import com.kalambo.libraryapi.entities.Role;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
 import com.kalambo.libraryapi.mappers.PageMapper;
 import com.kalambo.libraryapi.mappers.RoleMapper;
+import com.kalambo.libraryapi.repositories.PermissionRepository;
 import com.kalambo.libraryapi.repositories.RoleRepository;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IRole;
@@ -27,11 +28,20 @@ public class RoleServiceImpl implements RoleService {
     @Autowired
     private PageMapper<Role, IRole> pageMapper;
 
+    @Autowired
+    private PermissionRepository permissionRepository;
+
     @Override
     public IRole create(RoleDto roleDto) {
-        Role role = roleRepository.save(roleDto.toEntity());
+        Role rolePayload = roleDto.toEntity();
 
-        return roleMapper.map(role);
+        if (roleDto.getPermissionsIds().isEmpty())
+            return roleMapper.map(roleRepository.save(rolePayload));
+
+        permissionRepository.findAllById(roleDto.getPermissionsIds())
+                .forEach(permission -> rolePayload.addPermission(permission));
+
+        return roleMapper.map(roleRepository.save(rolePayload));
     }
 
     @Override

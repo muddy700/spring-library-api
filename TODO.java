@@ -23,8 +23,12 @@
  * 
  * 6. Add implementations for all applicable events-handlers
  * 
- * 7. Add Mini versions of all response classes ie.. IRole extends IBaseRolefor
- * optimization
+ * 7. Add base classes ie.. BaseEntity, BaseResponse
+ * 
+ * 8. Delete all relational data in delete function of all
+ * service-implementations
+ * 
+ * 9. Optimize queries ie.. eager/lazy loading
  */
 
 // ! Warnings

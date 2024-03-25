@@ -1,17 +1,22 @@
 package com.kalambo.libraryapi.seeders;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kalambo.libraryapi.dtos.RoleDto;
 import com.kalambo.libraryapi.entities.Role;
+import com.kalambo.libraryapi.repositories.PermissionRepository;
 import com.kalambo.libraryapi.repositories.RoleRepository;
 import com.kalambo.libraryapi.services.RoleService;
 
 import lombok.extern.slf4j.Slf4j;
 
+// TODO: Refactor this file to optimize queries
 @Component
 @Slf4j
 public class RoleSeeder {
@@ -26,6 +31,9 @@ public class RoleSeeder {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private PermissionRepository permissionRepository;
+
     public void seed() {
         log.info("Starting Roles seeding...");
 
@@ -37,9 +45,11 @@ public class RoleSeeder {
     }
 
     private RoleDto buildRoleDto(String name) {
-        String description = "Role for the overall system administrator who can perform anything.";
+        List<UUID> permissionsIds = new ArrayList<UUID>();
+        permissionRepository.findAll().forEach(permission -> permissionsIds.add(permission.getId()));
 
-        return new RoleDto().setName(name).setDescription(description);
+        String description = "Role for the overall system administrator who can perform anything.";
+        return new RoleDto().setName(name).setDescription(description).setPermissionsIds(permissionsIds);
     }
 
     private void saveRole(RoleDto payload) {
