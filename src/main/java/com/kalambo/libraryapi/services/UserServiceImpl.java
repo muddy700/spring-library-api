@@ -58,12 +58,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public IUser getById(UUID userId) {
-        String errorMessage = "No user found with ID: " + userId;
-
-        User userInfo = userRepository.findById(userId).orElseThrow(
-                () -> new ResourceNotFoundException(errorMessage));
-
-        return userMapper.map(userInfo);
+        return userMapper.map(getEntity(userId));
     }
 
     @Override
@@ -73,19 +68,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(UUID userId) {
-        // Ensure user is present or throw 404
-        getById(userId);
+        userRepository.delete(getEntity(userId));
+    }
 
-        // TODO: Delete all relational data here (if any)
-        userRepository.deleteById(userId);
+    @Override
+    public User getEntity(UUID userId) {
+        String errorMessage = "No user found with ID: " + userId;
+
+        return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(errorMessage));
     }
 
     private User copyNonNullValues(UpdateUserDto payload) {
-        // Ensure user is present or throw 404
-        getById(payload.getId());
-
         // Get existing user info
-        User userInfo = userRepository.findById(payload.getId()).get();
+        User userInfo = getEntity(payload.getId());
 
         // Append all updatable fields here.
         if (payload.getEmail() != null) {

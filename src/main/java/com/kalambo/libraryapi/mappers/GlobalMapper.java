@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.kalambo.libraryapi.entities.AuditTrail;
 import com.kalambo.libraryapi.entities.Book;
+import com.kalambo.libraryapi.entities.BookReview;
 import com.kalambo.libraryapi.entities.Permission;
 import com.kalambo.libraryapi.entities.Role;
 import com.kalambo.libraryapi.entities.Task;
@@ -39,6 +40,9 @@ public class GlobalMapper<T1, T2> {
     @Autowired
     private AuditTrailMapper auditTrailMapper;
 
+    @Autowired
+    private BookReviewMapper bookReviewMapper;
+
     @SuppressWarnings("unchecked")
     public T2 map(T1 entity) {
         T2 result = null;
@@ -60,6 +64,9 @@ public class GlobalMapper<T1, T2> {
 
         else if (entity.getClass().equals(AuditTrail.class))
             result = (T2) auditTrailMapper.map((AuditTrail) entity);
+
+        else if (entity.getClass().equals(BookReview.class))
+            result = (T2) bookReviewMapper.map((BookReview) entity);
 
         return result;
     }
