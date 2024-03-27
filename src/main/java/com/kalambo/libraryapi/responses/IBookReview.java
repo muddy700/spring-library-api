@@ -18,7 +18,7 @@ public class IBookReview {
     private String comment;
 
     private IUser user;
-    private IBook book;
+    private UUID bookId;
 
     private Date createdAt;
     private Date updatedAt;

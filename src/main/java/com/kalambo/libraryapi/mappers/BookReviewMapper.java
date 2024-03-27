@@ -11,14 +11,11 @@ public class BookReviewMapper {
     @Autowired
     private UserMapper userMapper;
 
-    @Autowired
-    private BookMapper bookMapper;
-
     public IBookReview map(BookReview bookReview) {
         IBookReview response = new IBookReview().setId(bookReview.getId())
                 .setRatings(bookReview.getRatings()).setComment(bookReview.getComment())
                 .setCreatedAt(bookReview.getCreatedAt()).setUpdatedAt(bookReview.getUpdatedAt())
-                .setUser(userMapper.map(bookReview.getUser())).setBook(bookMapper.map(bookReview.getBook()));
+                .setUser(userMapper.map(bookReview.getUser())).setBookId(bookReview.getBook().getId());
 
         return response;
     }

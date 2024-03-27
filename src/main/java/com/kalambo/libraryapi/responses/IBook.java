@@ -1,6 +1,7 @@
 package com.kalambo.libraryapi.responses;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -22,6 +23,9 @@ public class IBook {
     private String coverImage;
     private String authorName;
     private Boolean enabled;
+
+    private Integer ratings;
+    private List<IBookReview> reviews;
 
     private Date createdAt;
     private Date updatedAt;

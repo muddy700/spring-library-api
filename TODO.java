@@ -28,7 +28,8 @@
  * 8. Delete all relational data in delete function of all
  * service-implementations
  * 
- * 9. Optimize queries ie.. eager/lazy loading
+ * 9. Optimize queries ie.. eager/lazy loading, minimize relationships entities
+ * responses ie IUserV2 with few fields
  * 
  * 10. Add ratings field in IBook, and get/count it from BookReview
  * 

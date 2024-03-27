@@ -1,6 +1,8 @@
 package com.kalambo.libraryapi.services;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import com.kalambo.libraryapi.mappers.BookMapper;
 import com.kalambo.libraryapi.repositories.BookRepository;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IBook;
+import com.kalambo.libraryapi.responses.IBookReview;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -38,12 +41,17 @@ public class BookServiceImpl implements BookService {
         Book book = bookRepository.save(bookDto.toEntity().setRegistrationNumber(generateRegNo()));
 
         publisher.publishEvent(new BookCreatedEvent(book));
-        return bookMapper.map(book);
+        return appendRatingsInfo(book);
     }
 
     @Override
     public IPage<IBook> getAll(Pageable pageable) {
-        return pageMapper.paginate(bookRepository.findAll(pageable));
+        IPage<IBook> booksPage = pageMapper.paginate(bookRepository.findAll(pageable));
+        List<IBook> booksWithRatings = new ArrayList<IBook>(booksPage.getItems().size());
+
+        booksPage.getItems().forEach(iBook -> booksWithRatings.add(appendRatingsInfo(iBook)));
+
+        return booksPage.setItems(booksWithRatings);
     }
 
     @Override
@@ -53,12 +61,12 @@ public class BookServiceImpl implements BookService {
         Book bookInfo = bookRepository.findById(bookId).orElseThrow(
                 () -> new ResourceNotFoundException(errorMessage));
 
-        return bookMapper.map(bookInfo);
+        return appendRatingsInfo(bookInfo);
     }
 
     @Override
     public IBook update(UpdateBookDto payload) {
-        return bookMapper.map(bookRepository.save(copyNonNullValues(payload)));
+        return appendRatingsInfo(bookRepository.save(copyNonNullValues(payload)));
     }
 
     @Override
@@ -104,5 +112,22 @@ public class BookServiceImpl implements BookService {
             bookInfo.setEnabled(payload.getEnabled());
 
         return bookInfo;
+    }
+
+    private IBook appendRatingsInfo(Book book) {
+        return appendRatingsInfo(bookMapper.map(book));
+    }
+
+    private IBook appendRatingsInfo(IBook iBook) {
+        if (iBook.getReviews() == null)
+            return iBook;
+
+        Integer ratings = 0;
+
+        for (IBookReview review : iBook.getReviews()) {
+            ratings += review.getRatings();
+        }
+
+        return iBook.setRatings(ratings);
     }
 }
