@@ -31,7 +31,6 @@ import lombok.experimental.Accessors;
 })
 
 @SQLRestriction("deleted = false")
-// @SQLRestriction( "deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE tasks SET deleted = true, deleted_at = NOW() WHERE id = ?")
 
 public class Task {
@@ -65,9 +64,4 @@ public class Task {
 
     private Boolean deleted = Boolean.FALSE;
     private Date deletedAt;
-
-    // Relationships sample
-    // @ManyToOne(optional = false)
-    // @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
-    // private Role role;
 }

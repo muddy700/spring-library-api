@@ -41,12 +41,13 @@ public class AuditTrailServiceImpl implements AuditTrailService {
 
     @Override
     public IAuditTrail getById(UUID auditTrailId) {
-        String errorMessage = "No audit-trail found with ID: " + auditTrailId;
-
-        AuditTrail auditTrailInfo = auditTrailRepository.findById(auditTrailId).orElseThrow(
-                () -> new ResourceNotFoundException(errorMessage));
-
-        return auditTrailMapper.map(auditTrailInfo);
+        return auditTrailMapper.map(getEntity(auditTrailId));
     }
 
+    @Override
+    public AuditTrail getEntity(UUID trailId) {
+        String errorMessage = "No audit-trail found with ID: " + trailId;
+
+        return auditTrailRepository.findById(trailId).orElseThrow(() -> new ResourceNotFoundException(errorMessage));
+    }
 }

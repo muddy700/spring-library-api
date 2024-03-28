@@ -1,7 +1,6 @@
 package com.kalambo.libraryapi.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +26,6 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public IPage<IPermission> getAll(Pageable pageable) {
-        Page<Permission> permissionPage = permissionRepository.findAll(pageable);
-        return pageMapper.paginate(permissionPage);
+        return pageMapper.paginate(permissionRepository.findAll(pageable));
     }
 }

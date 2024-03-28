@@ -34,6 +34,9 @@
  * 10. Add ratings field in IBook, and get/count it from BookReview
  * 
  * 11. See if there's a need to add index on createdAt field
+ * 
+ * 12. Add data flow diagrams ie.. controller -> Service(Dto) ->
+ * Controller(IResponse)
  */
 
 // ! Warnings

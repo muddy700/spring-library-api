@@ -44,12 +44,13 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ITask getById(Integer taskId) {
+        return taskMapper.map(getEntity(taskId));
+    }
+
+    @Override
+    public Task getEntity(Integer taskId) {
         String errorMessage = "No task found with ID: " + taskId;
-
-        Task taskInfo = taskRepository.findById(taskId).orElseThrow(
-                () -> new ResourceNotFoundException(errorMessage));
-
-        return taskMapper.map(taskInfo);
+        return taskRepository.findById(taskId).orElseThrow(() -> new ResourceNotFoundException(errorMessage));
     }
 
     @Override
@@ -64,24 +65,17 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ITask update(TaskDto task) {
-        return taskMapper.map(taskRepository.save(updateTaskPayload(task)));
+        return taskMapper.map(taskRepository.save(copyNonNullValues(task)));
     }
 
     @Override
     public void delete(Integer taskId) {
-        // Ensure task is present or throw 404
-        ITask task = getById(taskId);
-
-        // TODO: Delete all relational data here (if any)
-        taskRepository.deleteById(task.getId());
+        taskRepository.delete(getEntity(taskId));
     }
 
-    private Task updateTaskPayload(TaskDto payload) {
-        // Ensure task is present or throw 404
-        getById(payload.getId());
-
+    private Task copyNonNullValues(TaskDto payload) {
         // Get existing task info
-        Task taskInfo = taskRepository.findById(payload.getId()).get();
+        Task taskInfo = getEntity(payload.getId());
 
         // Append all updatable fields here.
         if (payload.getTitle() != null)

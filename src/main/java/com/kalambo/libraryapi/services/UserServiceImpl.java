@@ -115,9 +115,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private Role getRoleInfo(UUID roleId) {
-        // Ensure role is present or throw 404
-        roleService.getById(roleId);
-
-        return roleRepository.findById(roleId).get();
+        return roleService.getEntity(roleId);
     }
 }
