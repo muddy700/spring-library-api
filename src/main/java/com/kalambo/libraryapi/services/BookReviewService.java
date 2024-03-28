@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.kalambo.libraryapi.dtos.BookReviewDto;
 import com.kalambo.libraryapi.dtos.UpdateBookReviewDto;
 import com.kalambo.libraryapi.entities.Book;
+import com.kalambo.libraryapi.entities.BookReview;
 import com.kalambo.libraryapi.responses.IBookReview;
 
 public interface BookReviewService {
@@ -16,4 +17,6 @@ public interface BookReviewService {
     IBookReview update(UpdateBookReviewDto bookReviewDto);
 
     List<IBookReview> getByBook(Book book);
+
+    BookReview getEntity(UUID bookReviewId);
 }

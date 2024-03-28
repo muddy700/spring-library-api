@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.kalambo.libraryapi.dtos.BookDto;
 import com.kalambo.libraryapi.dtos.BookReviewDto;
 import com.kalambo.libraryapi.dtos.UpdateBookDto;
+import com.kalambo.libraryapi.dtos.UpdateBookReviewDto;
 import com.kalambo.libraryapi.entities.Book;
 import com.kalambo.libraryapi.events.BookCreatedEvent;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
@@ -63,11 +64,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void delete(UUID bookId) {
-        // Ensure book is present or throw 404
-        getById(bookId);
-
-        // TODO: Delete all relational data here (if any)
-        bookRepository.deleteById(bookId);
+        bookRepository.delete(getEntity(bookId));
     }
 
     @Override
@@ -82,7 +79,12 @@ public class BookServiceImpl implements BookService {
         Book book = getEntity(payload.getBookId());
         bookReviewService.create(payload, book);
 
-        return bookMapper.map(book);
+        return appendRatingsInfo(book);
+    }
+
+    @Override
+    public IBook updateReview(UpdateBookReviewDto payload) {
+        return appendRatingsInfo(getEntity(bookReviewService.update(payload).getBookId()));
     }
 
     private String generateRegNo() {

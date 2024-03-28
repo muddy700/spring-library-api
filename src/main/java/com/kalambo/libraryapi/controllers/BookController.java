@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kalambo.libraryapi.dtos.BookDto;
 import com.kalambo.libraryapi.dtos.BookReviewDto;
 import com.kalambo.libraryapi.dtos.UpdateBookDto;
+import com.kalambo.libraryapi.dtos.UpdateBookReviewDto;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IBook;
 import com.kalambo.libraryapi.services.BookService;
@@ -85,6 +86,16 @@ public class BookController {
         IBook updatedBook = bookService.addReview(payload.setBookId(bookId));
 
         return ResponseEntity.ok(updatedBook);
+    }
+
+    @PutMapping("{bookId}/reviews/{reviewId}")
+    @Operation(summary = "Update book's review info.", description = "Some description.")
+    public ResponseEntity<IBook> updateReview(@PathVariable("bookId") UUID bookId,
+            @PathVariable("reviewId") UUID reviewId,
+            @Valid @RequestBody UpdateBookReviewDto payload) {
+        log.info("PUT - /api/v1/books/" + bookId + "/reviews/" + reviewId);
+
+        return ResponseEntity.ok(bookService.updateReview(payload.setReviewId(reviewId)));
     }
 
     @DeleteMapping("{id}")

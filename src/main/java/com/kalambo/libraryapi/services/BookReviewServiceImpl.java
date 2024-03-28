@@ -55,12 +55,7 @@ public class BookReviewServiceImpl implements BookReviewService {
 
     @Override
     public IBookReview getById(UUID bookReviewId) {
-        String errorMessage = "No Book-Review found with ID: " + bookReviewId;
-
-        BookReview bookReviewInfo = bookReviewRepository.findById(bookReviewId).orElseThrow(
-                () -> new ResourceNotFoundException(errorMessage));
-
-        return bookReviewMapper.map(bookReviewInfo);
+        return bookReviewMapper.map(getEntity(bookReviewId));
     }
 
     @Override
@@ -68,12 +63,16 @@ public class BookReviewServiceImpl implements BookReviewService {
         return bookReviewMapper.map(bookReviewRepository.save(copyNonNullValues(bookReview)));
     }
 
-    private BookReview copyNonNullValues(UpdateBookReviewDto payload) {
-        // Ensure book-review is present or throw 404
-        getById(payload.getId());
+    @Override
+    public BookReview getEntity(UUID entityId) {
+        String errorMessage = "No Book-Review found with ID: " + entityId;
 
+        return bookReviewRepository.findById(entityId).orElseThrow(() -> new ResourceNotFoundException(errorMessage));
+    }
+
+    private BookReview copyNonNullValues(UpdateBookReviewDto payload) {
         // Get existing book-review info
-        BookReview bookReviewInfo = bookReviewRepository.findById(payload.getId()).get();
+        BookReview bookReviewInfo = getEntity(payload.getReviewId());
 
         // Append all updatable fields here.
         if (payload.getComment() != null)

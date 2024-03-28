@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import com.kalambo.libraryapi.dtos.BookDto;
 import com.kalambo.libraryapi.dtos.BookReviewDto;
 import com.kalambo.libraryapi.dtos.UpdateBookDto;
+import com.kalambo.libraryapi.dtos.UpdateBookReviewDto;
 import com.kalambo.libraryapi.entities.Book;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IBook;
@@ -25,4 +26,6 @@ public interface BookService {
     Book getEntity(UUID bookId);
 
     IBook addReview(BookReviewDto bookReviewDto);
+
+    IBook updateReview(UpdateBookReviewDto payload);
 }
