@@ -1,8 +1,6 @@
 package com.kalambo.libraryapi.services;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.BookDto;
+import com.kalambo.libraryapi.dtos.BookReviewDto;
 import com.kalambo.libraryapi.dtos.UpdateBookDto;
 import com.kalambo.libraryapi.entities.Book;
 import com.kalambo.libraryapi.events.BookCreatedEvent;
@@ -34,6 +33,9 @@ public class BookServiceImpl implements BookService {
     private PageMapper<Book, IBook> pageMapper;
 
     @Autowired
+    private BookReviewService bookReviewService;
+
+    @Autowired
     private ApplicationEventPublisher publisher;
 
     @Override
@@ -46,22 +48,12 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public IPage<IBook> getAll(Pageable pageable) {
-        IPage<IBook> booksPage = pageMapper.paginate(bookRepository.findAll(pageable));
-        List<IBook> booksWithRatings = new ArrayList<IBook>(booksPage.getItems().size());
-
-        booksPage.getItems().forEach(iBook -> booksWithRatings.add(appendRatingsInfo(iBook)));
-
-        return booksPage.setItems(booksWithRatings);
+        return pageMapper.paginate(bookRepository.findAll(pageable));
     }
 
     @Override
     public IBook getById(UUID bookId) {
-        String errorMessage = "No book found with ID: " + bookId;
-
-        Book bookInfo = bookRepository.findById(bookId).orElseThrow(
-                () -> new ResourceNotFoundException(errorMessage));
-
-        return appendRatingsInfo(bookInfo);
+        return appendRatingsInfo(getEntity(bookId));
     }
 
     @Override
@@ -78,6 +70,21 @@ public class BookServiceImpl implements BookService {
         bookRepository.deleteById(bookId);
     }
 
+    @Override
+    public Book getEntity(UUID bookId) {
+        String errorMessage = "No book found with ID: " + bookId;
+
+        return bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException(errorMessage));
+    }
+
+    @Override
+    public IBook addReview(BookReviewDto payload) {
+        Book book = getEntity(payload.getBookId());
+        bookReviewService.create(payload, book);
+
+        return bookMapper.map(book);
+    }
+
     private String generateRegNo() {
         int year = LocalDate.now().getYear();
         int totalBooks = (int) bookRepository.count();
@@ -86,11 +93,8 @@ public class BookServiceImpl implements BookService {
     }
 
     private Book copyNonNullValues(UpdateBookDto payload) {
-        // Ensure book is present or throw 404
-        getById(payload.getId());
-
         // Get existing book info
-        Book bookInfo = bookRepository.findById(payload.getId()).get();
+        Book bookInfo = getEntity(payload.getId());
 
         // Append all updatable fields here.
         if (payload.getTitle() != null)
@@ -115,19 +119,19 @@ public class BookServiceImpl implements BookService {
     }
 
     private IBook appendRatingsInfo(Book book) {
-        return appendRatingsInfo(bookMapper.map(book));
+        return appendRatingsInfo(bookMapper.map(book).setReviews(bookReviewService.getByBook(book)));
     }
 
     private IBook appendRatingsInfo(IBook iBook) {
-        if (iBook.getReviews() == null)
-            return iBook;
-
         Integer ratings = 0;
+
+        if (iBook.getReviews().isEmpty() || iBook.getReviews() == null)
+            return iBook;
 
         for (IBookReview review : iBook.getReviews()) {
             ratings += review.getRatings();
         }
 
-        return iBook.setRatings(ratings);
+        return iBook.setRatings(ratings / iBook.getReviews().size());
     }
 }

@@ -75,8 +75,5 @@ public class Book {
     @Column(nullable = false)
     private Date updatedAt;
 
-    @OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
-    private Set<BookReview> reviews;
-
     private Date deletedAt;
 }

@@ -5,14 +5,15 @@ import java.util.UUID;
 
 import com.kalambo.libraryapi.dtos.BookReviewDto;
 import com.kalambo.libraryapi.dtos.UpdateBookReviewDto;
+import com.kalambo.libraryapi.entities.Book;
 import com.kalambo.libraryapi.responses.IBookReview;
 
 public interface BookReviewService {
-    IBookReview create(BookReviewDto bookReviewDto);
+    IBookReview create(BookReviewDto bookReviewDto, Book book);
 
     IBookReview getById(UUID bookReviewId);
 
     IBookReview update(UpdateBookReviewDto bookReviewDto);
 
-    List<IBookReview> getByBookId(UUID bookId);
+    List<IBookReview> getByBook(Book book);
 }

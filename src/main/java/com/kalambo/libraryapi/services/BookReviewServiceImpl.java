@@ -15,7 +15,6 @@ import com.kalambo.libraryapi.entities.BookReview;
 import com.kalambo.libraryapi.events.BookReviewCreatedEvent;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
 import com.kalambo.libraryapi.mappers.BookReviewMapper;
-import com.kalambo.libraryapi.repositories.BookRepository;
 import com.kalambo.libraryapi.repositories.BookReviewRepository;
 import com.kalambo.libraryapi.responses.IBookReview;
 
@@ -28,22 +27,15 @@ public class BookReviewServiceImpl implements BookReviewService {
     private BookReviewMapper bookReviewMapper;
 
     @Autowired
-    private BookService bookService;
-
-    @Autowired
-    private BookRepository bookRepository;
-
-    @Autowired
     private UserService userService;
 
     @Autowired
     private ApplicationEventPublisher publisher;
 
     @Override
-    public IBookReview create(BookReviewDto payload) {
-        BookReview entity = payload.toEntity()
-                .setUser(userService.getEntity(payload.getUserId()))
-                .setBook(getBookInfo(payload.getBookId()));
+    public IBookReview create(BookReviewDto payload, Book book) {
+        BookReview entity = payload.toEntity().setBook(book)
+                .setUser(userService.getEntity(payload.getUserId()));
 
         BookReview bookReview = bookReviewRepository.save(entity);
         publisher.publishEvent(new BookReviewCreatedEvent(bookReview));
@@ -52,10 +44,10 @@ public class BookReviewServiceImpl implements BookReviewService {
     }
 
     @Override
-    public List<IBookReview> getByBookId(UUID bookId) {
+    public List<IBookReview> getByBook(Book book) {
         List<IBookReview> response = new ArrayList<IBookReview>();
 
-        bookReviewRepository.findByBook(getBookInfo(bookId))
+        bookReviewRepository.findByBook(book)
                 .forEach(bookReview -> response.add(bookReviewMapper.map(bookReview)));
 
         return response;
@@ -88,12 +80,5 @@ public class BookReviewServiceImpl implements BookReviewService {
             bookReviewInfo.setComment(payload.getComment());
 
         return bookReviewInfo;
-    }
-
-    private Book getBookInfo(UUID bookId) {
-        // Ensure book is present or throw 404
-        bookService.getById(bookId);
-
-        return bookRepository.findById(bookId).get();
     }
 }

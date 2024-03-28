@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kalambo.libraryapi.dtos.BookDto;
+import com.kalambo.libraryapi.dtos.BookReviewDto;
 import com.kalambo.libraryapi.dtos.UpdateBookDto;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IBook;
@@ -71,6 +72,17 @@ public class BookController {
         log.info("PUT - /api/v1/books/" + bookId);
 
         IBook updatedBook = bookService.update(payload.setId(bookId));
+
+        return ResponseEntity.ok(updatedBook);
+    }
+
+    @PostMapping("{id}/reviews")
+    @Operation(summary = "Add review into a book.", description = "Some description.")
+    public ResponseEntity<IBook> addReview(@PathVariable("id") UUID bookId,
+            @Valid @RequestBody BookReviewDto payload) {
+        log.info("POST - /api/v1/books/" + bookId + "/reviews");
+
+        IBook updatedBook = bookService.addReview(payload.setBookId(bookId));
 
         return ResponseEntity.ok(updatedBook);
     }
