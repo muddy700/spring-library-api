@@ -1,5 +1,6 @@
 package com.kalambo.libraryapi.dtos;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +26,7 @@ public class RoleDto {
     @Size(min = 10, max = 200)
     private String description;
 
-    private List<UUID> permissionsIds;
+    private List<UUID> permissionsIds = new ArrayList<UUID>();
 
     public Role toEntity() {
         return new Role()

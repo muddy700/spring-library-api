@@ -2,6 +2,7 @@ package com.kalambo.libraryapi.entities;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -69,20 +70,13 @@ public class Role {
     // Relationships
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "role_permission_mapping", joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id"))
-    private Set<Permission> permissions;
+    private Set<Permission> permissions = new HashSet<Permission>();
 
-    public void addPermission(Permission permission) {
-        if (Objects.isNull(permissions))
-            permissions = new HashSet<Permission>();
-
-        permissions.add(permission);
+    public void addPermissions(List<Permission> payload) {
+        permissions.addAll(payload);
     }
 
-    public void removePermission(UUID permissionId) {
-        Permission permissionToRemove = permissions.stream().filter(permission -> permission.getId() == permissionId)
-                .findFirst().orElse(null);
-
-        if (permissionToRemove != null)
-            permissions.remove(permissionToRemove);
+    public void removePermissions(List<UUID> permissionsIds) {
+        permissions.removeIf(permission -> permissionsIds.contains(permission.getId()));
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kalambo.libraryapi.dtos.RoleDto;
+import com.kalambo.libraryapi.dtos.UpdatePermissionDto;
 import com.kalambo.libraryapi.dtos.UpdateRoleDto;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IRole;
@@ -74,6 +75,15 @@ public class RoleController {
         IRole updatedRole = roleService.update(payload);
 
         return ResponseEntity.ok(updatedRole);
+    }
+
+    @PutMapping("{id}/manage-permissions")
+    @Operation(summary = "Manage role's permissions.", description = "Some description.")
+    public ResponseEntity<IRole> managePermissions(@PathVariable("id") UUID roleId,
+            @RequestBody UpdatePermissionDto payload) {
+        log.info("PUT - /api/v1/roles/" + roleId + "/manage-permissions");
+
+        return ResponseEntity.ok(roleService.managePermissions(payload.setRoleId(roleId)));
     }
 
     @DeleteMapping("{id}")

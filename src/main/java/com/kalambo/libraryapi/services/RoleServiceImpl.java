@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.RoleDto;
+import com.kalambo.libraryapi.dtos.UpdatePermissionDto;
 import com.kalambo.libraryapi.dtos.UpdateRoleDto;
 import com.kalambo.libraryapi.entities.Role;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
@@ -35,11 +36,8 @@ public class RoleServiceImpl implements RoleService {
     public IRole create(RoleDto roleDto) {
         Role rolePayload = roleDto.toEntity();
 
-        if (roleDto.getPermissionsIds().isEmpty())
-            return roleMapper.map(roleRepository.save(rolePayload));
-
-        permissionRepository.findAllById(roleDto.getPermissionsIds())
-                .forEach(permission -> rolePayload.addPermission(permission));
+        if (!roleDto.getPermissionsIds().isEmpty())
+            rolePayload.addPermissions(permissionRepository.findAllById(roleDto.getPermissionsIds()));
 
         return roleMapper.map(roleRepository.save(rolePayload));
     }
@@ -51,12 +49,14 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public IRole getById(UUID roleId) {
+        return roleMapper.map(getEntity(roleId));
+    }
+
+    @Override
+    public Role getEntity(UUID roleId) {
         String errorMessage = "No role found with ID: " + roleId;
 
-        Role roleInfo = roleRepository.findById(roleId).orElseThrow(
-                () -> new ResourceNotFoundException(errorMessage));
-
-        return roleMapper.map(roleInfo);
+        return roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException(errorMessage));
     }
 
     @Override
@@ -65,20 +65,29 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void delete(UUID roleId) {
-        // Ensure role is present or throw 404
-        getById(roleId);
+    public IRole managePermissions(UpdatePermissionDto payload) {
+        Role role = getEntity(payload.getRoleId());
 
-        // TODO: Delete all relational data here (if any)
-        roleRepository.deleteById(roleId);
+        if (payload.getRemovedPermissionsIds().isEmpty() && payload.getAddedPermissionsIds().isEmpty())
+            return roleMapper.map(role);
+
+        if (!payload.getRemovedPermissionsIds().isEmpty())
+            role.removePermissions(payload.getRemovedPermissionsIds());
+
+        if (!payload.getAddedPermissionsIds().isEmpty())
+            role.addPermissions(permissionRepository.findAllById(payload.getAddedPermissionsIds()));
+
+        return roleMapper.map(roleRepository.save(role));
+    }
+
+    @Override
+    public void delete(UUID roleId) {
+        roleRepository.delete(getEntity(roleId));
     }
 
     private Role copyNonNullValues(UpdateRoleDto payload) {
-        // Ensure role is present or throw 404
-        getById(payload.getId());
-
         // Get existing role info
-        Role roleInfo = roleRepository.findById(payload.getId()).get();
+        Role roleInfo = getEntity(payload.getId());
 
         // Append all updatable fields here.
         if (payload.getName() != null)

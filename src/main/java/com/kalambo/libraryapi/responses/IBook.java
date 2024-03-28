@@ -1,5 +1,6 @@
 package com.kalambo.libraryapi.responses;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +26,7 @@ public class IBook {
     private Boolean enabled;
 
     private Integer ratings;
-    private List<IBookReview> reviews;
+    private List<IBookReview> reviews = new ArrayList<IBookReview>();
 
     private Date createdAt;
     private Date updatedAt;

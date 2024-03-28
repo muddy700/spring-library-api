@@ -127,7 +127,7 @@ public class BookServiceImpl implements BookService {
     private IBook appendRatingsInfo(IBook iBook) {
         Integer ratings = 0;
 
-        if (iBook.getReviews().isEmpty() || iBook.getReviews() == null)
+        if (iBook.getReviews().isEmpty())
             return iBook;
 
         for (IBookReview review : iBook.getReviews()) {

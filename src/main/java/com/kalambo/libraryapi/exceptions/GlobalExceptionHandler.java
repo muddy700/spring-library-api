@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // TODO: Remember to handle the following
     // SQLException, EntityNotFoundException NoSuchElementException,
-    // IllegalArgumentException,
+    // IllegalArgumentException => for null permission-ids
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
