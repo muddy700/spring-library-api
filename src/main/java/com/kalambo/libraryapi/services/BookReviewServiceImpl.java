@@ -12,7 +12,9 @@ import com.kalambo.libraryapi.dtos.BookReviewDto;
 import com.kalambo.libraryapi.dtos.UpdateBookReviewDto;
 import com.kalambo.libraryapi.entities.Book;
 import com.kalambo.libraryapi.entities.BookReview;
+import com.kalambo.libraryapi.entities.User;
 import com.kalambo.libraryapi.events.BookReviewCreatedEvent;
+import com.kalambo.libraryapi.exceptions.ResourceDuplicationException;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
 import com.kalambo.libraryapi.mappers.BookReviewMapper;
 import com.kalambo.libraryapi.repositories.BookReviewRepository;
@@ -34,8 +36,10 @@ public class BookReviewServiceImpl implements BookReviewService {
 
     @Override
     public IBookReview create(BookReviewDto payload, Book book) {
-        BookReview entity = payload.toEntity().setBook(book)
-                .setUser(userService.getEntity(payload.getUserId()));
+        User user = userService.getEntity(payload.getUserId());
+
+        checkDuplication(user, book);
+        BookReview entity = payload.toEntity().setBook(book).setUser(user);
 
         BookReview bookReview = bookReviewRepository.save(entity);
         publisher.publishEvent(new BookReviewCreatedEvent(bookReview));
@@ -68,6 +72,14 @@ public class BookReviewServiceImpl implements BookReviewService {
         String errorMessage = "No Book-Review found with ID: " + entityId;
 
         return bookReviewRepository.findById(entityId).orElseThrow(() -> new ResourceNotFoundException(errorMessage));
+    }
+
+    private void checkDuplication(User user, Book book) {
+        String errorMessage = "Review for a book with title: " + book.getTitle() + ", from user with name: "
+                + user.getFullName() + ", already exist";
+
+        if (bookReviewRepository.findByUserAndBook(user, book).isPresent())
+            throw new ResourceDuplicationException(errorMessage);
     }
 
     private BookReview copyNonNullValues(UpdateBookReviewDto payload) {

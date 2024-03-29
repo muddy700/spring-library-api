@@ -37,6 +37,9 @@
  * 
  * 12. Add data flow diagrams ie.. controller -> Service(Dto) ->
  * Controller(IResponse)
+ * 
+ * 13. See if there's a need to store IError in the database with traceId
+ * traceId: TID-2023-0329-10015, and send email to admin
  */
 
 // ! Warnings
@@ -45,4 +48,11 @@
  * 1. Use repositories only for 'Read' operations and
  * Services for other operations(Create, Update and Delete)
  * 2.
+ */
+
+// * Assumptions
+/*
+ * System assumptions
+ * 1. One author cannot have two books with the same name.
+ * 2. One user cannot review more than one for each single book
  */

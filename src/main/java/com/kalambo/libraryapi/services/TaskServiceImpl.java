@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.kalambo.libraryapi.dtos.TaskDto;
 import com.kalambo.libraryapi.entities.Task;
 import com.kalambo.libraryapi.events.TaskCreatedEvent;
+import com.kalambo.libraryapi.exceptions.ResourceDuplicationException;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
 import com.kalambo.libraryapi.mappers.PageMapper;
 import com.kalambo.libraryapi.mappers.TaskMapper;
@@ -31,6 +32,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ITask create(TaskDto taskDto) {
+        checkDuplication(taskDto.getTitle());
         Task task = taskRepository.save(taskDto.toEntity());
 
         publisher.publishEvent(new TaskCreatedEvent(task));
@@ -73,13 +75,22 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.delete(getEntity(taskId));
     }
 
+    private void checkDuplication(String title) {
+        String errorMessage = "Task with title: " + title + ", already exist";
+
+        if (taskRepository.findByTitle(title).isPresent())
+            throw new ResourceDuplicationException(errorMessage);
+    }
+
     private Task copyNonNullValues(TaskDto payload) {
         // Get existing task info
         Task taskInfo = getEntity(payload.getId());
 
         // Append all updatable fields here.
-        if (payload.getTitle() != null)
+        if (payload.getTitle() != null) {
+            checkDuplication(payload.getTitle());
             taskInfo.setTitle(payload.getTitle());
+        }
 
         if (payload.getMaxDuration() != null)
             taskInfo.setMaxDuration(payload.getMaxDuration());

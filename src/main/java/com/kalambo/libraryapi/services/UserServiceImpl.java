@@ -108,9 +108,8 @@ public class UserServiceImpl implements UserService {
 
     private void checkDuplication(String email) {
         String errorMessage = "User with email: " + email + ", already exist";
-        Optional<User> optionalUser = userRepository.findByEmail(email);
 
-        if (optionalUser.isPresent())
+        if (userRepository.findByEmail(email).isPresent())
             throw new ResourceDuplicationException(errorMessage);
     }
 

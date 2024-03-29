@@ -19,13 +19,9 @@ public class IError {
     private String path;
     private String title;
     private String description;
-    private List<IValidation> validations;
+    private List<IValidation> validations = new ArrayList<IValidation>();
 
     public void addValidationError(String fieldName, String errorMessage) {
-        if (Objects.isNull(validations)) {
-            validations = new ArrayList<IValidation>();
-        }
-
         validations.add(new IValidation(fieldName, errorMessage));
     }
 }

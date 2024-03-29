@@ -10,6 +10,7 @@ import com.kalambo.libraryapi.dtos.RoleDto;
 import com.kalambo.libraryapi.dtos.UpdatePermissionDto;
 import com.kalambo.libraryapi.dtos.UpdateRoleDto;
 import com.kalambo.libraryapi.entities.Role;
+import com.kalambo.libraryapi.exceptions.ResourceDuplicationException;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
 import com.kalambo.libraryapi.mappers.PageMapper;
 import com.kalambo.libraryapi.mappers.RoleMapper;
@@ -34,6 +35,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public IRole create(RoleDto roleDto) {
+        checkDuplication(roleDto.getName());
         Role rolePayload = roleDto.toEntity();
 
         if (!roleDto.getPermissionsIds().isEmpty())
@@ -85,13 +87,22 @@ public class RoleServiceImpl implements RoleService {
         roleRepository.delete(getEntity(roleId));
     }
 
+    private void checkDuplication(String name) {
+        String errorMessage = "Role with name: " + name + ", already exist";
+
+        if (roleRepository.findByName(name).isPresent())
+            throw new ResourceDuplicationException(errorMessage);
+    }
+
     private Role copyNonNullValues(UpdateRoleDto payload) {
         // Get existing role info
         Role roleInfo = getEntity(payload.getId());
 
         // Append all updatable fields here.
-        if (payload.getName() != null)
+        if (payload.getName() != null) {
+            checkDuplication(payload.getName());
             roleInfo.setName(payload.getName());
+        }
 
         if (payload.getDescription() != null)
             roleInfo.setDescription(payload.getDescription());
