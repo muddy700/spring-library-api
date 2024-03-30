@@ -25,6 +25,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @Entity
+
 @Table(name = "tasks", indexes = {
         @Index(name = "title_index", columnList = "title DESC", unique = true),
         @Index(name = "duration_index", columnList = "max_duration")

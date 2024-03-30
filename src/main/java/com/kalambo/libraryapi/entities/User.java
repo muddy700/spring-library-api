@@ -1,31 +1,30 @@
 package com.kalambo.libraryapi.entities;
 
 import java.util.Date;
-import java.util.UUID;
 
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.UpdateTimestamp;
+
+import com.kalambo.libraryapi.entities.abstracts.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @Entity
+
 @Table(name = "users", indexes = {
         @Index(name = "email_index", columnList = "email", unique = true),
         @Index(name = "deleted_index", columnList = "deleted_at"),
@@ -37,12 +36,7 @@ import lombok.experimental.Accessors;
 @SQLRestriction("deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE users SET deleted_at = NOW() WHERE id = ?")
 
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(insertable = false, updatable = false)
-    private UUID id;
-
+public class User extends BaseEntity {
     @Column(length = 40, unique = true, nullable = false)
     private String email;
 
@@ -69,16 +63,6 @@ public class User {
 
     @Column(nullable = false)
     private Boolean enabled = Boolean.TRUE;
-
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private Date createdAt;
-
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private Date updatedAt;
-
-    private Date deletedAt;
 
     // Relationships
     @ManyToOne(optional = false)
