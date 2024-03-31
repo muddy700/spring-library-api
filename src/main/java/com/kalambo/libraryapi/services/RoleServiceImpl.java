@@ -35,14 +35,14 @@ public class RoleServiceImpl implements RoleService {
     private PermissionRepository permissionRepository;
 
     @Override
-    public IRole create(RoleDto roleDto) {
+    public UUID create(RoleDto roleDto) {
         checkDuplication(roleDto.getName());
         Role rolePayload = roleDto.toEntity();
 
         if (!roleDto.getPermissionsIds().isEmpty())
             rolePayload.addPermissions(permissionRepository.findAllById(roleDto.getPermissionsIds()));
 
-        return roleMapper.map(roleRepository.save(rolePayload));
+        return roleRepository.save(rolePayload).getId();
     }
 
     @Override
@@ -63,16 +63,16 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public IRole update(UpdateRoleDto role) {
-        return roleMapper.map(roleRepository.save(copyNonNullValues(role)));
+    public void update(UpdateRoleDto role) {
+        roleRepository.save(copyNonNullValues(role));
     }
 
     @Override
-    public IRole managePermissions(UpdatePermissionDto payload) {
+    public void managePermissions(UpdatePermissionDto payload) {
         Role role = getEntity(payload.getRoleId());
 
         if (payload.getRemovedPermissionsIds().isEmpty() && payload.getAddedPermissionsIds().isEmpty())
-            return roleMapper.map(role);
+            return;
 
         if (!payload.getRemovedPermissionsIds().isEmpty())
             role.removePermissions(payload.getRemovedPermissionsIds());
@@ -80,7 +80,7 @@ public class RoleServiceImpl implements RoleService {
         if (!payload.getAddedPermissionsIds().isEmpty())
             role.addPermissions(permissionRepository.findAllById(payload.getAddedPermissionsIds()));
 
-        return roleMapper.map(roleRepository.save(role));
+        roleRepository.save(role);
     }
 
     @Override

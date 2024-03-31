@@ -39,12 +39,12 @@ public class UserServiceImpl implements UserService {
     private ApplicationEventPublisher publisher;
 
     @Override
-    public IUser create(UserDto userDto) {
+    public UUID create(UserDto userDto) {
         checkDuplication(userDto.getEmail());
         User user = userRepository.save(userDto.toEntity().setRole(getRoleInfo(userDto.getRoleId())));
 
         publisher.publishEvent(new UserCreatedEvent(user));
-        return userMapper.map(user);
+        return user.getId();
     }
 
     @Override
@@ -58,8 +58,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public IUser update(UpdateUserDto payload) {
-        return userMapper.map(userRepository.save(copyNonNullValues(payload)));
+    public void update(UpdateUserDto payload) {
+        userRepository.save(copyNonNullValues(payload));
     }
 
     @Override

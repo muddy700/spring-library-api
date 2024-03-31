@@ -12,13 +12,13 @@ import com.kalambo.libraryapi.responses.IUser;
 import com.kalambo.libraryapi.responses.IUserV2;
 
 public interface UserService {
-    IUser create(UserDto userDto);
+    UUID create(UserDto userDto);
 
     IPage<IUserV2> getAll(Pageable pageable);
 
     IUser getById(UUID userId);
 
-    IUser update(UpdateUserDto userDto);
+    void update(UpdateUserDto userDto);
 
     void delete(UUID userId);
 

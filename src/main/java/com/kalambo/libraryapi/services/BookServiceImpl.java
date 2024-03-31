@@ -42,12 +42,12 @@ public class BookServiceImpl implements BookService {
     private ApplicationEventPublisher publisher;
 
     @Override
-    public IBook create(BookDto bookDto) {
+    public UUID create(BookDto bookDto) {
         checkDuplication(bookDto.getTitle(), bookDto.getAuthorName());
         Book book = bookRepository.save(bookDto.toEntity().setRegistrationNumber(generateRegNo()));
 
         publisher.publishEvent(new BookCreatedEvent(book));
-        return appendRatingsInfo(book);
+        return book.getId();
     }
 
     @Override
@@ -61,8 +61,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public IBook update(UpdateBookDto payload) {
-        return appendRatingsInfo(bookRepository.save(copyNonNullValues(payload)));
+    public void update(UpdateBookDto payload) {
+        bookRepository.save(copyNonNullValues(payload));
     }
 
     @Override
@@ -78,16 +78,13 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public IBook addReview(BookReviewDto payload) {
-        Book book = getEntity(payload.getBookId());
-        bookReviewService.create(payload, book);
-
-        return appendRatingsInfo(book);
+    public void addReview(BookReviewDto payload) {
+        bookReviewService.create(payload, getEntity(payload.getBookId()));
     }
 
     @Override
-    public IBook updateReview(UpdateBookReviewDto payload) {
-        return appendRatingsInfo(getEntity(bookReviewService.update(payload).getBookId()));
+    public void updateReview(UpdateBookReviewDto payload) {
+        bookReviewService.update(payload);
     }
 
     private void checkDuplication(String title, String authorName) {
@@ -97,7 +94,7 @@ public class BookServiceImpl implements BookService {
             throw new ResourceDuplicationException(errorMessage);
     }
 
-    private String generateRegNo() {
+    private final String generateRegNo() {
         int year = LocalDate.now().getYear();
         int totalBooks = (int) bookRepository.count();
 

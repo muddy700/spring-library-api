@@ -12,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -22,7 +23,9 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RestController
 @ControllerAdvice
+
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // TODO: Remember to handle the following
     // SQLException, EntityNotFoundException NoSuchElementException,
@@ -30,25 +33,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public final ResponseEntity<IError> handleNotFoundException(ResourceNotFoundException ex, WebRequest request) {
-        return finalResult(ex, request, HttpStatus.NOT_FOUND, "Resource not found");
+    public final IError handleNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+        return formatError(ex, request, "Resource not found");
     }
 
     @ExceptionHandler(ResourceDuplicationException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public final ResponseEntity<IError> onDuplicationException(ResourceDuplicationException ex, WebRequest request) {
-        return finalResult(ex, request, HttpStatus.CONFLICT, "Resource duplication");
+    public final IError onDuplicationException(ResourceDuplicationException ex, WebRequest request) {
+        return formatError(ex, request, "Resource duplication");
     }
 
     @ExceptionHandler(ExternalAPIException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public final ResponseEntity<IError> handleExternalAPIException(ExternalAPIException ex, WebRequest request) {
-        return finalResult(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, "Failed to call external api");
+    public final IError handleExternalAPIException(ExternalAPIException ex, WebRequest request) {
+        return formatError(ex, request, "Failed to call external api");
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public final ResponseEntity<IError> handleConstraintViolation(ConstraintViolationException ex, WebRequest request) {
+    public final IError handleConstraintViolation(ConstraintViolationException ex, WebRequest request) {
         IError errorInfo = formatError(ex, request, "Constraint violation")
                 .setDescription("Make some changes in the field(s) listed below and try again");
 
@@ -57,15 +60,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             errorInfo.addValidationError(violation.getPropertyPath().toString(), violation.getMessage());
         }
 
-        return finalResult(errorInfo, HttpStatus.BAD_REQUEST);
+        return errorInfo;
     }
 
     // TODO: Review the description returned and modify to hide db info
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public final ResponseEntity<IError> handleDataIntegrityViolation(
-            DataIntegrityViolationException ex, WebRequest request) {
-        return finalResult(ex, request, HttpStatus.BAD_REQUEST, "Data integrity violation");
+    public final IError handleDataIntegrityViolation(DataIntegrityViolationException ex, WebRequest request) {
+        return formatError(ex, request, "Data integrity violation");
     }
 
     @Override
@@ -84,8 +86,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public final ResponseEntity<IError> handleAllUncaughtExceptions(Exception ex, WebRequest request) {
-        return finalResult(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occured");
+    public final IError handleAllUncaughtExceptions(Exception ex, WebRequest request) {
+        return formatError(ex, request, "Unknown error occured");
     }
 
     private IError formatError(Exception ex, WebRequest request, String title) {
@@ -99,14 +101,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             log.error(title + " :: " + errorDetails.getDescription());
 
         return errorDetails;
-    }
-
-    private final ResponseEntity<IError> finalResult(IError responseBody, HttpStatus statusCode) {
-        return ResponseEntity.status(statusCode).body(responseBody);
-    }
-
-    private final ResponseEntity<IError> finalResult(Exception ex, WebRequest request, HttpStatus statusCode,
-            String title) {
-        return finalResult(formatError(ex, request, title), statusCode);
     }
 }

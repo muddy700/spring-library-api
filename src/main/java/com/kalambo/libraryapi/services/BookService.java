@@ -14,19 +14,19 @@ import com.kalambo.libraryapi.responses.IBook;
 import com.kalambo.libraryapi.responses.IBookV2;
 
 public interface BookService {
-    IBook create(BookDto bookDto);
+    UUID create(BookDto bookDto);
 
     IPage<IBookV2> getAll(Pageable pageable);
 
     IBook getById(UUID bookId);
 
-    IBook update(UpdateBookDto payload);
+    void update(UpdateBookDto payload);
 
     void delete(UUID bookId);
 
     Book getEntity(UUID bookId);
 
-    IBook addReview(BookReviewDto bookReviewDto);
+    void addReview(BookReviewDto bookReviewDto);
 
-    IBook updateReview(UpdateBookReviewDto payload);
+    void updateReview(UpdateBookReviewDto payload);
 }

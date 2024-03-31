@@ -30,6 +30,6 @@ public class MailNotifier {
     }
 
     public void onBookCreation(Book book) {
-        // TODO: Notify students about the new book added and send them link to view it
+        // TODO: Notify students who subscribed about the new book added and send them link to view it
     }
 }

@@ -20,13 +20,8 @@
  * 
  * 6. Add implementations for all applicable events-handlers
  * 
- * 7. Add base classes ie.. BaseResponse(for getAll vs getById)
- * 
  * 8. Delete all relational data in delete function of all
  * service-implementations
- * 
- * 9. Optimize queries ie.. eager/lazy loading, minimize relationships entities
- * responses ie IUserV2 with few fields
  * 
  * 11. See if there's a need to add index on createdAt field
  * 

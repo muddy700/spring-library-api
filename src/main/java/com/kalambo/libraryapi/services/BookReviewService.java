@@ -11,11 +11,11 @@ import com.kalambo.libraryapi.responses.IBookReview;
 import com.kalambo.libraryapi.responses.IBookReviewV2;
 
 public interface BookReviewService {
-    IBookReview create(BookReviewDto bookReviewDto, Book book);
+    void create(BookReviewDto bookReviewDto, Book book);
 
     IBookReview getById(UUID bookReviewId);
 
-    IBookReview update(UpdateBookReviewDto bookReviewDto);
+    void update(UpdateBookReviewDto bookReviewDto);
 
     List<IBookReviewV2> getByBook(Book book);
 

@@ -36,16 +36,13 @@ public class BookReviewServiceImpl implements BookReviewService {
     private ApplicationEventPublisher publisher;
 
     @Override
-    public IBookReview create(BookReviewDto payload, Book book) {
+    public void create(BookReviewDto payload, Book book) {
         User user = userService.getEntity(payload.getUserId());
 
         checkDuplication(user, book);
         BookReview entity = payload.toEntity().setBook(book).setUser(user);
 
-        BookReview bookReview = bookReviewRepository.save(entity);
-        publisher.publishEvent(new BookReviewCreatedEvent(bookReview));
-
-        return bookReviewMapper.map(bookReview);
+        publisher.publishEvent(new BookReviewCreatedEvent(bookReviewRepository.save(entity)));
     }
 
     @Override
@@ -64,8 +61,8 @@ public class BookReviewServiceImpl implements BookReviewService {
     }
 
     @Override
-    public IBookReview update(UpdateBookReviewDto bookReview) {
-        return bookReviewMapper.map(bookReviewRepository.save(copyNonNullValues(bookReview)));
+    public void update(UpdateBookReviewDto bookReview) {
+        bookReviewRepository.save(copyNonNullValues(bookReview));
     }
 
     @Override

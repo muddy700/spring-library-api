@@ -4,8 +4,6 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,91 +20,90 @@ import com.kalambo.libraryapi.dtos.BookReviewDto;
 import com.kalambo.libraryapi.dtos.UpdateBookDto;
 import com.kalambo.libraryapi.dtos.UpdateBookReviewDto;
 import com.kalambo.libraryapi.responses.IPage;
+import com.kalambo.libraryapi.responses.ISuccess;
 import com.kalambo.libraryapi.responses.IBook;
 import com.kalambo.libraryapi.responses.IBookV2;
 import com.kalambo.libraryapi.services.BookService;
+import com.kalambo.libraryapi.utilities.GlobalUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
-@Tag(name = "Book", description = "Manage books.")
 @Slf4j
-@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/v1/books")
+@CrossOrigin(origins = "http://localhost:4200")
+@Tag(name = "Book", description = "Manage books.")
+
 public class BookController {
     @Autowired
     private BookService bookService;
 
     @PostMapping
     @Operation(summary = "Add a book.", description = "Some description.")
-    public ResponseEntity<IBook> createBook(@Valid @RequestBody BookDto payload) {
+    public ISuccess createBook(@Valid @RequestBody BookDto payload) {
         log.info("POST - /api/v1/books");
-        IBook createdBook = bookService.create(payload);
 
-        return new ResponseEntity<IBook>(createdBook, HttpStatus.OK);
+        return successResponse("create", bookService.create(payload));
     }
 
     @GetMapping
     @Operation(summary = "Retrieve all books.", description = "Some description.")
-    public ResponseEntity<IPage<IBookV2>> getAllBooks(@RequestParam(defaultValue = "0") int page,
+    public IPage<IBookV2> getAllBooks(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         log.info("GET - /api/v1/books");
 
-        return ResponseEntity.ok(bookService.getAll(PageRequest.of(page, size)));
+        return bookService.getAll(PageRequest.of(page, size));
     }
 
     @GetMapping("{id}")
     @Operation(summary = "Retrieve a single book by id.", description = "Some description.")
-    public ResponseEntity<IBook> getBookById(@PathVariable("id") UUID bookId) {
+    public IBook getBookById(@PathVariable("id") UUID bookId) {
         log.info("GET - /api/v1/books/" + bookId);
-        IBook book = bookService.getById(bookId);
 
-        return ResponseEntity.ok(book);
+        return bookService.getById(bookId);
     }
 
     @PutMapping("{id}")
     @Operation(summary = "Update book details.", description = "Some description.")
-    public ResponseEntity<IBook> updateBook(@PathVariable("id") UUID bookId,
-            @RequestBody UpdateBookDto payload) {
+    public ISuccess updateBook(@PathVariable("id") UUID bookId, @RequestBody UpdateBookDto payload) {
         log.info("PUT - /api/v1/books/" + bookId);
 
-        IBook updatedBook = bookService.update(payload.setId(bookId));
-
-        return ResponseEntity.ok(updatedBook);
+        bookService.update(payload.setId(bookId));
+        return successResponse("update", bookId);
     }
 
     @PostMapping("{id}/reviews")
     @Operation(summary = "Add review into a book.", description = "Some description.")
-    public ResponseEntity<IBook> addReview(@PathVariable("id") UUID bookId,
-            @Valid @RequestBody BookReviewDto payload) {
+    public ISuccess addReview(@PathVariable("id") UUID bookId, @Valid @RequestBody BookReviewDto payload) {
         log.info("POST - /api/v1/books/" + bookId + "/reviews");
 
-        IBook updatedBook = bookService.addReview(payload.setBookId(bookId));
-
-        return ResponseEntity.ok(updatedBook);
+        bookService.addReview(payload.setBookId(bookId));
+        return successResponse("Book's review added", bookId);
     }
 
     @PutMapping("{bookId}/reviews/{reviewId}")
     @Operation(summary = "Update book's review info.", description = "Some description.")
-    public ResponseEntity<IBook> updateReview(@PathVariable("bookId") UUID bookId,
-            @PathVariable("reviewId") UUID reviewId,
-            @Valid @RequestBody UpdateBookReviewDto payload) {
+    public ISuccess updateReview(@PathVariable("bookId") UUID bookId,
+            @PathVariable("reviewId") UUID reviewId, @Valid @RequestBody UpdateBookReviewDto payload) {
         log.info("PUT - /api/v1/books/" + bookId + "/reviews/" + reviewId);
 
-        return ResponseEntity.ok(bookService.updateReview(payload.setReviewId(reviewId)));
+        bookService.updateReview(payload.setReviewId(reviewId));
+        return successResponse("Book's review updated", reviewId);
     }
 
     @DeleteMapping("{id}")
     @Operation(summary = "Delete a single book by id.", description = "Some description.")
-    public ResponseEntity<String> deleteBookById(@PathVariable("id") UUID bookId) {
+    public ISuccess deleteBookById(@PathVariable("id") UUID bookId) {
         log.warn("DELETE - /api/v1/books/" + bookId);
 
         bookService.delete(bookId);
-        String message = "Book with ID: " + bookId + ", deleted successful.";
+        return successResponse("delete", bookId);
+    }
 
-        return ResponseEntity.ok(message);
+    private final ISuccess successResponse(String action, UUID resourceId) {
+        return GlobalUtil.formatResponse("Book", action, resourceId);
     }
 }

@@ -1,10 +1,7 @@
 package com.kalambo.libraryapi.controllers;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,65 +28,58 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
-@Tag(name = "Task", description = "Manage user tasks.")
 @Slf4j
 @Validated
-@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/v1/tasks")
-public class TaskController {
+@CrossOrigin(origins = "http://localhost:4200")
+@Tag(name = "Task", description = "Manage user tasks.")
 
+public class TaskController {
     @Autowired
-    TaskService taskService;
+    private TaskService taskService;
 
     @PostMapping
     @Validated(OnCreate.class)
     @Operation(summary = "Create a new task.", description = "Some description.")
-    public ResponseEntity<ITask> createTask(@Valid @RequestBody TaskDto payload) {
+    public ITask createTask(@Valid @RequestBody TaskDto payload) {
         log.info("POST - /api/v1/tasks");
-        ITask createdTask = taskService.create(payload);
 
-        return new ResponseEntity<ITask>(createdTask, HttpStatus.CREATED);
+        return taskService.create(payload);
     }
 
     @GetMapping
     @Operation(summary = "Retrieve all tasks.", description = "Some description.")
-    public ResponseEntity<IPage<ITask>> getAllTasks(@RequestParam(defaultValue = "0") int page,
+    public IPage<ITask> getAllTasks(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         log.info("GET - /api/v1/tasks");
 
-        return ResponseEntity.ok(taskService.getAll(PageRequest.of(page, size)));
+        return taskService.getAll(PageRequest.of(page, size));
     }
 
     @GetMapping("{id}")
     @Operation(summary = "Retrieve a single task by id.", description = "Some description.")
-    public ResponseEntity<ITask> getTaskById(@PathVariable("id") @Min(1) Integer taskId) {
+    public ITask getTaskById(@PathVariable("id") @Min(1) Integer taskId) {
         log.info("GET - /api/v1/tasks/" + taskId);
-        ITask task = taskService.getById(taskId);
 
-        return ResponseEntity.ok(task);
+        return taskService.getById(taskId);
     }
 
     @PutMapping("{id}")
     @Validated(OnUpdate.class)
     @Operation(summary = "Update task details.", description = "Some description.")
-    public ResponseEntity<ITask> updateTask(@PathVariable("id") Integer taskId, @Valid @RequestBody TaskDto payload) {
+    public ITask updateTask(@PathVariable("id") Integer taskId, @Valid @RequestBody TaskDto payload) {
         log.info("PUT - /api/v1/tasks/" + taskId);
 
-        payload.setId(taskId);
-        ITask updatedTask = taskService.update(payload);
-
-        return ResponseEntity.ok(updatedTask);
+        return taskService.update(payload.setId(taskId));
     }
 
     @DeleteMapping("{id}")
     @Operation(summary = "Delete a single task by id.", description = "Some description.")
-    public ResponseEntity<String> deleteTaskById(@PathVariable("id") Integer taskId) {
+    public String deleteTaskById(@PathVariable("id") Integer taskId) {
         log.warn("DELETE - /api/v1/tasks/" + taskId);
 
         taskService.delete(taskId);
-        String message = "Task with ID: " + taskId + " deleted successful.";
-
-        return ResponseEntity.ok(message);
+        return "Task with ID: " + taskId + " deleted successful.";
     }
 }
