@@ -19,6 +19,7 @@ import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
 import com.kalambo.libraryapi.mappers.BookReviewMapper;
 import com.kalambo.libraryapi.repositories.BookReviewRepository;
 import com.kalambo.libraryapi.responses.IBookReview;
+import com.kalambo.libraryapi.responses.IBookReviewV2;
 
 @Service
 public class BookReviewServiceImpl implements BookReviewService {
@@ -48,11 +49,11 @@ public class BookReviewServiceImpl implements BookReviewService {
     }
 
     @Override
-    public List<IBookReview> getByBook(Book book) {
-        List<IBookReview> response = new ArrayList<IBookReview>();
+    public List<IBookReviewV2> getByBook(Book book) {
+        List<IBookReviewV2> response = new ArrayList<IBookReviewV2>();
 
         bookReviewRepository.findByBook(book)
-                .forEach(bookReview -> response.add(bookReviewMapper.map(bookReview)));
+                .forEach(bookReview -> response.add(bookReviewMapper.mapToV2(bookReview)));
 
         return response;
     }

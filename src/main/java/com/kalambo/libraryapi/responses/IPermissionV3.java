@@ -1,6 +1,5 @@
 package com.kalambo.libraryapi.responses;
 
-import java.util.Date;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -13,17 +12,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(chain = true)
 
-public class IAuditTrail {
+public class IPermissionV3 {
     private UUID id;
-    private String action;
-    private String resourceName;
-
-    private String resourceId;
     private String description;
-
-    private String updatedValues;
-    private String previousValues;
-
-    private IUserV3 user;
-    private Date createdAt;
 }

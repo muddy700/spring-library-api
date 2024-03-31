@@ -11,11 +11,12 @@ import com.kalambo.libraryapi.dtos.UpdateBookReviewDto;
 import com.kalambo.libraryapi.entities.Book;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IBook;
+import com.kalambo.libraryapi.responses.IBookV2;
 
 public interface BookService {
     IBook create(BookDto bookDto);
 
-    IPage<IBook> getAll(Pageable pageable);
+    IPage<IBookV2> getAll(Pageable pageable);
 
     IBook getById(UUID bookId);
 

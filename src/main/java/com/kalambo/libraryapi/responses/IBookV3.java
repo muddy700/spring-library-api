@@ -1,7 +1,5 @@
 package com.kalambo.libraryapi.responses;
 
-import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -14,15 +12,8 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(chain = true)
 
-public class IRole {
+public class IBookV3 {
     private UUID id;
-    private String name;
-    private String description;
-
-    private Boolean active;
-    List<IPermissionV3> permissions;
-
-    private Date createdAt;
-    private Date updatedAt;
-    private Date deletedAt;
+    private String title;
+    private String registrationNumber;
 }

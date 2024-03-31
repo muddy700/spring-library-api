@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IAuditTrail;
+import com.kalambo.libraryapi.responses.IAuditTrailV2;
 import com.kalambo.libraryapi.services.AuditTrailService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,7 +32,7 @@ public class AuditTrailController {
 
     @GetMapping
     @Operation(summary = "Retrieve all audit-trails.", description = "Some description.")
-    public ResponseEntity<IPage<IAuditTrail>> getAllAuditTrails(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<IPage<IAuditTrailV2>> getAllAuditTrails(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         log.info("GET - /api/v1/audit-trails");
 

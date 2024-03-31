@@ -1,8 +1,6 @@
 package com.kalambo.libraryapi.responses;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -15,21 +13,16 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(chain = true)
 
-public class IBook {
+public class IBookV2 {
     private UUID id;
     private String title;
-    private String description;
     private String registrationNumber;
 
-    private String content;
     private String coverImage;
     private String authorName;
-    private Boolean enabled;
+    private Integer reviewsCount;
 
     private Integer ratings;
-    private List<IBookReviewV2> reviews = new ArrayList<IBookReviewV2>();
-
-    private Date createdAt;
+    private Boolean enabled;
     private Date updatedAt;
-    private Date deletedAt;
 }

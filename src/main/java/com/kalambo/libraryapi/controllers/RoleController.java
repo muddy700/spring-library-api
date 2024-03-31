@@ -22,6 +22,7 @@ import com.kalambo.libraryapi.dtos.UpdatePermissionDto;
 import com.kalambo.libraryapi.dtos.UpdateRoleDto;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IRole;
+import com.kalambo.libraryapi.responses.IRoleV2;
 import com.kalambo.libraryapi.services.RoleService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,7 +50,7 @@ public class RoleController {
 
     @GetMapping
     @Operation(summary = "Retrieve all roles.", description = "Some description.")
-    public ResponseEntity<IPage<IRole>> getAllRoles(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<IPage<IRoleV2>> getAllRoles(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         log.info("GET - /api/v1/roles");
 

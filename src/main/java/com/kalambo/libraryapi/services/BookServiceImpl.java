@@ -21,7 +21,8 @@ import com.kalambo.libraryapi.mappers.BookMapper;
 import com.kalambo.libraryapi.repositories.BookRepository;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IBook;
-import com.kalambo.libraryapi.responses.IBookReview;
+import com.kalambo.libraryapi.responses.IBookReviewV2;
+import com.kalambo.libraryapi.responses.IBookV2;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -32,7 +33,7 @@ public class BookServiceImpl implements BookService {
     private BookMapper bookMapper;
 
     @Autowired
-    private PageMapper<Book, IBook> pageMapper;
+    private PageMapper<Book, IBookV2> pageMapper;
 
     @Autowired
     private BookReviewService bookReviewService;
@@ -50,7 +51,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public IPage<IBook> getAll(Pageable pageable) {
+    public IPage<IBookV2> getAll(Pageable pageable) {
         return pageMapper.paginate(bookRepository.findAll(pageable));
     }
 
@@ -142,7 +143,7 @@ public class BookServiceImpl implements BookService {
         if (iBook.getReviews().isEmpty())
             return iBook;
 
-        for (IBookReview review : iBook.getReviews()) {
+        for (IBookReviewV2 review : iBook.getReviews()) {
             ratings += review.getRatings();
         }
 

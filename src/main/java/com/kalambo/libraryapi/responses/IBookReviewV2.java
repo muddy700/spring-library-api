@@ -13,17 +13,11 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(chain = true)
 
-public class IAuditTrail {
+public class IBookReviewV2 {
     private UUID id;
-    private String action;
-    private String resourceName;
-
-    private String resourceId;
-    private String description;
-
-    private String updatedValues;
-    private String previousValues;
+    private Integer ratings;
+    private String comment;
 
     private IUserV3 user;
-    private Date createdAt;
+    private Date updatedAt;
 }

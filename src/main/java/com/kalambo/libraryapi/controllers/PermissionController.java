@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kalambo.libraryapi.responses.IPage;
-import com.kalambo.libraryapi.responses.IPermission;
+import com.kalambo.libraryapi.responses.IPermissionV2;
 import com.kalambo.libraryapi.services.PermissionService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,7 +29,7 @@ public class PermissionController {
 
     @GetMapping
     @Operation(summary = "Retrieve all permissions.", description = "Some description.")
-    public ResponseEntity<IPage<IPermission>> getAllPermissions(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<IPage<IPermissionV2>> getAllPermissions(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         log.info("GET - /api/v1/permissions");
 

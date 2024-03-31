@@ -18,6 +18,7 @@ import com.kalambo.libraryapi.repositories.PermissionRepository;
 import com.kalambo.libraryapi.repositories.RoleRepository;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IRole;
+import com.kalambo.libraryapi.responses.IRoleV2;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -28,7 +29,7 @@ public class RoleServiceImpl implements RoleService {
     private RoleMapper roleMapper;
 
     @Autowired
-    private PageMapper<Role, IRole> pageMapper;
+    private PageMapper<Role, IRoleV2> pageMapper;
 
     @Autowired
     private PermissionRepository permissionRepository;
@@ -45,7 +46,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public IPage<IRole> getAll(Pageable pageable) {
+    public IPage<IRoleV2> getAll(Pageable pageable) {
         return pageMapper.paginate(roleRepository.findAll(pageable));
     }
 

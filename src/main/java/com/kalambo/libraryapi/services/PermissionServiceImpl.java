@@ -9,7 +9,7 @@ import com.kalambo.libraryapi.entities.Permission;
 import com.kalambo.libraryapi.mappers.PageMapper;
 import com.kalambo.libraryapi.repositories.PermissionRepository;
 import com.kalambo.libraryapi.responses.IPage;
-import com.kalambo.libraryapi.responses.IPermission;
+import com.kalambo.libraryapi.responses.IPermissionV2;
 
 @Service
 public class PermissionServiceImpl implements PermissionService {
@@ -17,7 +17,7 @@ public class PermissionServiceImpl implements PermissionService {
     private PermissionRepository permissionRepository;
 
     @Autowired
-    private PageMapper<Permission, IPermission> pageMapper;
+    private PageMapper<Permission, IPermissionV2> pageMapper;
 
     @Override
     public void create(PermissionDto permissionDto) {
@@ -25,7 +25,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public IPage<IPermission> getAll(Pageable pageable) {
+    public IPage<IPermissionV2> getAll(Pageable pageable) {
         return pageMapper.paginate(permissionRepository.findAll(pageable));
     }
 }

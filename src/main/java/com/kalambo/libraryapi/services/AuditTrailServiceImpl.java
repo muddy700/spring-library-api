@@ -14,6 +14,7 @@ import com.kalambo.libraryapi.mappers.AuditTrailMapper;
 import com.kalambo.libraryapi.repositories.AuditTrailRepository;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IAuditTrail;
+import com.kalambo.libraryapi.responses.IAuditTrailV2;
 
 @Service
 public class AuditTrailServiceImpl implements AuditTrailService {
@@ -27,7 +28,7 @@ public class AuditTrailServiceImpl implements AuditTrailService {
     private AuditTrailMapper auditTrailMapper;
 
     @Autowired
-    private PageMapper<AuditTrail, IAuditTrail> pageMapper;
+    private PageMapper<AuditTrail, IAuditTrailV2> pageMapper;
 
     @Override
     public void create(AuditTrailDto payload) {
@@ -35,7 +36,7 @@ public class AuditTrailServiceImpl implements AuditTrailService {
     }
 
     @Override
-    public IPage<IAuditTrail> getAll(Pageable pageable) {
+    public IPage<IAuditTrailV2> getAll(Pageable pageable) {
         return pageMapper.paginate(auditTrailRepository.findAll(pageable));
     }
 

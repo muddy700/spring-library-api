@@ -21,6 +21,7 @@ import com.kalambo.libraryapi.dtos.UserDto;
 import com.kalambo.libraryapi.dtos.UpdateUserDto;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IUser;
+import com.kalambo.libraryapi.responses.IUserV2;
 import com.kalambo.libraryapi.services.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,7 +49,7 @@ public class UserController {
 
     @GetMapping
     @Operation(summary = "Retrieve all users.", description = "Some description.")
-    public ResponseEntity<IPage<IUser>> getAllUsers(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<IPage<IUserV2>> getAllUsers(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         log.info("GET - /api/v1/users");
 

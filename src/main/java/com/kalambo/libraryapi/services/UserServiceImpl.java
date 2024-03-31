@@ -1,6 +1,5 @@
 package com.kalambo.libraryapi.services;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,18 +16,15 @@ import com.kalambo.libraryapi.exceptions.ResourceDuplicationException;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
 import com.kalambo.libraryapi.mappers.PageMapper;
 import com.kalambo.libraryapi.mappers.UserMapper;
-import com.kalambo.libraryapi.repositories.RoleRepository;
 import com.kalambo.libraryapi.repositories.UserRepository;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IUser;
+import com.kalambo.libraryapi.responses.IUserV2;
 
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
     private RoleService roleService;
-
-    @Autowired
-    private RoleRepository roleRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -37,7 +33,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Autowired
-    private PageMapper<User, IUser> pageMapper;
+    private PageMapper<User, IUserV2> pageMapper;
 
     @Autowired
     private ApplicationEventPublisher publisher;
@@ -52,7 +48,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public IPage<IUser> getAll(Pageable pageable) {
+    public IPage<IUserV2> getAll(Pageable pageable) {
         return pageMapper.paginate(userRepository.findAll(pageable));
     }
 
@@ -108,6 +104,8 @@ public class UserServiceImpl implements UserService {
 
     private void checkDuplication(String email) {
         String errorMessage = "User with email: " + email + ", already exist";
+
+        // TODO: Check with phoneNumber and fullName also.
 
         if (userRepository.findByEmail(email).isPresent())
             throw new ResourceDuplicationException(errorMessage);

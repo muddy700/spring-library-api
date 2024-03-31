@@ -23,6 +23,7 @@ import com.kalambo.libraryapi.dtos.UpdateBookDto;
 import com.kalambo.libraryapi.dtos.UpdateBookReviewDto;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IBook;
+import com.kalambo.libraryapi.responses.IBookV2;
 import com.kalambo.libraryapi.services.BookService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,7 +51,7 @@ public class BookController {
 
     @GetMapping
     @Operation(summary = "Retrieve all books.", description = "Some description.")
-    public ResponseEntity<IPage<IBook>> getAllBooks(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<IPage<IBookV2>> getAllBooks(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         log.info("GET - /api/v1/books");
 

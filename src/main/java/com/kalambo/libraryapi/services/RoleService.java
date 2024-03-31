@@ -10,11 +10,12 @@ import com.kalambo.libraryapi.dtos.UpdateRoleDto;
 import com.kalambo.libraryapi.entities.Role;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IRole;
+import com.kalambo.libraryapi.responses.IRoleV2;
 
 public interface RoleService {
     IRole create(RoleDto roleDto);
 
-    IPage<IRole> getAll(Pageable pageable);
+    IPage<IRoleV2> getAll(Pageable pageable);
 
     IRole getById(UUID roleId);
 
