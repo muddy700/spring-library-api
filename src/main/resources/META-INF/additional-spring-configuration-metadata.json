@@ -29,6 +29,16 @@
 			"name": "scheduler.cron.interval",
 			"type": "java.lang.String",
 			"description": "Interval to use with scheduled methods in UNIX style cron-like expression"
+		},
+		{
+			"name": "security.jwt.expiration-time",
+			"type": "java.lang.String",
+			"description": "An expiration time for the JWT tokens"
+		},
+		{
+			"name": "security.jwt.secret-key",
+			"type": "java.lang.String",
+			"description": "A secret key used for the JWT computations"
 		}
 	]
 }

@@ -108,9 +108,7 @@ public class PermissionSeeder {
     private void savePermission(PermissionDto payload) {
         Optional<Permission> optionalPermission = permissionRepository.findByAction(payload.getAction());
 
-        if (optionalPermission.isPresent())
-            log.info("Permission with action: '" + payload.getAction() + "', already exist.");
-        else {
+        if (!optionalPermission.isPresent()) {
             permissionService.create(payload);
             totalPermissionsCreated += 1;
         }

@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,12 +28,9 @@ import com.kalambo.libraryapi.utilities.GlobalUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/v1/books")
-@CrossOrigin(origins = "http://localhost:4200")
 @Tag(name = "Book", description = "Manage books.")
 
 public class BookController {
@@ -44,7 +40,7 @@ public class BookController {
     @PostMapping
     @Operation(summary = "Add a book.", description = "Some description.")
     public ISuccess createBook(@Valid @RequestBody BookDto payload) {
-        log.info("POST - /api/v1/books");
+        logRequest("POST", "");
 
         return successResponse("create", bookService.create(payload));
     }
@@ -53,7 +49,7 @@ public class BookController {
     @Operation(summary = "Retrieve all books.", description = "Some description.")
     public IPage<IBookV2> getAllBooks(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        log.info("GET - /api/v1/books");
+        logRequest("GET", "");
 
         return bookService.getAll(PageRequest.of(page, size));
     }
@@ -61,7 +57,7 @@ public class BookController {
     @GetMapping("{id}")
     @Operation(summary = "Retrieve a single book by id.", description = "Some description.")
     public IBook getBookById(@PathVariable("id") UUID bookId) {
-        log.info("GET - /api/v1/books/" + bookId);
+        logRequest("GET", "/" + bookId);
 
         return bookService.getById(bookId);
     }
@@ -69,7 +65,7 @@ public class BookController {
     @PutMapping("{id}")
     @Operation(summary = "Update book details.", description = "Some description.")
     public ISuccess updateBook(@PathVariable("id") UUID bookId, @RequestBody UpdateBookDto payload) {
-        log.info("PUT - /api/v1/books/" + bookId);
+        logRequest("PUT", "/" + bookId);
 
         bookService.update(payload.setId(bookId));
         return successResponse("update", bookId);
@@ -78,7 +74,7 @@ public class BookController {
     @PostMapping("{id}/reviews")
     @Operation(summary = "Add review into a book.", description = "Some description.")
     public ISuccess addReview(@PathVariable("id") UUID bookId, @Valid @RequestBody BookReviewDto payload) {
-        log.info("POST - /api/v1/books/" + bookId + "/reviews");
+        logRequest("POST", "/" + bookId + "/reviews");
 
         bookService.addReview(payload.setBookId(bookId));
         return successResponse("Book's review added", bookId);
@@ -88,7 +84,7 @@ public class BookController {
     @Operation(summary = "Update book's review info.", description = "Some description.")
     public ISuccess updateReview(@PathVariable("bookId") UUID bookId,
             @PathVariable("reviewId") UUID reviewId, @Valid @RequestBody UpdateBookReviewDto payload) {
-        log.info("PUT - /api/v1/books/" + bookId + "/reviews/" + reviewId);
+        logRequest("PUT", "/" + bookId + "/reviews/" + reviewId);
 
         bookService.updateReview(payload.setReviewId(reviewId));
         return successResponse("Book's review updated", reviewId);
@@ -97,7 +93,7 @@ public class BookController {
     @DeleteMapping("{id}")
     @Operation(summary = "Delete a single book by id.", description = "Some description.")
     public ISuccess deleteBookById(@PathVariable("id") UUID bookId) {
-        log.warn("DELETE - /api/v1/books/" + bookId);
+        logRequest("DELETE", "/" + bookId);
 
         bookService.delete(bookId);
         return successResponse("delete", bookId);
@@ -105,5 +101,9 @@ public class BookController {
 
     private final ISuccess successResponse(String action, UUID resourceId) {
         return GlobalUtil.formatResponse("Book", action, resourceId);
+    }
+
+    private void logRequest(String httpMethod, String endpoint) {
+        GlobalUtil.logRequest(httpMethod, "books" + endpoint);
     }
 }

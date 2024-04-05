@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,22 +27,27 @@ import com.kalambo.libraryapi.utilities.GlobalUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/v1/users")
-@CrossOrigin(origins = "http://localhost:4200")
 @Tag(name = "User", description = "Manage users.")
 
 public class UserController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/me")
+    @Operation(summary = "Retrieve details of authenticated user by token.", description = "Some description.")
+    public IUser getUserProfile() {
+        logRequest("GET", "/me");
+
+        return userService.getByToken(SecurityContextHolder.getContext().getAuthentication());
+    }
+
     @PostMapping
     @Operation(summary = "Create a new user.", description = "Some description.")
     public ISuccess createUser(@Valid @RequestBody UserDto payload) {
-        log.info("POST - /api/v1/users");
+        logRequest("POST", "");
 
         return successResponse("create", userService.create(payload));
     }
@@ -51,7 +56,7 @@ public class UserController {
     @Operation(summary = "Retrieve all users.", description = "Some description.")
     public IPage<IUserV2> getAllUsers(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        log.info("GET - /api/v1/users");
+        logRequest("GET", "");
 
         return userService.getAll(PageRequest.of(page, size));
     }
@@ -59,7 +64,7 @@ public class UserController {
     @GetMapping("{id}")
     @Operation(summary = "Retrieve a single user by id.", description = "Some description.")
     public IUser getUserById(@PathVariable("id") UUID userId) {
-        log.info("GET - /api/v1/users/" + userId);
+        logRequest("GET", "/" + userId);
 
         return userService.getById(userId);
     }
@@ -67,7 +72,7 @@ public class UserController {
     @PutMapping("{id}")
     @Operation(summary = "Update user details.", description = "Some description.")
     public ISuccess updateUser(@PathVariable("id") UUID userId, @Valid @RequestBody UpdateUserDto payload) {
-        log.info("PUT - /api/v1/users/" + userId);
+        logRequest("PUT", "/" + userId);
 
         userService.update(payload.setId(userId));
         return successResponse("update", userId);
@@ -76,7 +81,7 @@ public class UserController {
     @DeleteMapping("{id}")
     @Operation(summary = "Delete a single user by id.", description = "Some description.")
     public ISuccess deleteUserById(@PathVariable("id") UUID userId) {
-        log.warn("DELETE - /api/v1/users/" + userId);
+        logRequest("DELETE", "/" + userId);
 
         userService.delete(userId);
         return successResponse("delete", userId);
@@ -84,5 +89,9 @@ public class UserController {
 
     private final ISuccess successResponse(String action, UUID resourceId) {
         return GlobalUtil.formatResponse("User", action, resourceId);
+    }
+
+    private void logRequest(String httpMethod, String endpoint) {
+        GlobalUtil.logRequest(httpMethod, "users" + endpoint);
     }
 }

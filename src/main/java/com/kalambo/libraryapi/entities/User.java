@@ -1,9 +1,13 @@
 package com.kalambo.libraryapi.entities;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.kalambo.libraryapi.entities.abstracts.BaseEntity;
 
@@ -36,7 +40,7 @@ import lombok.experimental.Accessors;
 @SQLRestriction("deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE users SET deleted_at = NOW() WHERE id = ?")
 
-public class User extends BaseEntity {
+public class User extends BaseEntity implements UserDetails {
     @Column(length = 40, unique = true, nullable = false)
     private String email;
 
@@ -47,7 +51,7 @@ public class User extends BaseEntity {
     private Date verificationTokenExpiresAt;
 
     @Column(nullable = false)
-    private String password = "123";
+    private String password;
 
     private Date emailVerifiedAt;
     private Date phoneVerifiedAt;
@@ -67,4 +71,35 @@ public class User extends BaseEntity {
     // Relationships
     @ManyToOne(optional = false)
     private Role role;
+
+    // For security implementations
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
 }

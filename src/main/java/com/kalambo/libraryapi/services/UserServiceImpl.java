@@ -5,6 +5,8 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.UserDto;
@@ -38,13 +40,25 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ApplicationEventPublisher publisher;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public UUID create(UserDto userDto) {
         checkDuplication(userDto.getEmail());
-        User user = userRepository.save(userDto.toEntity().setRole(getRoleInfo(userDto.getRoleId())));
 
-        publisher.publishEvent(new UserCreatedEvent(user));
-        return user.getId();
+        User payload = userDto.toEntity()
+                .setRole(getRoleInfo(userDto.getRoleId())).setPassword(generatePassword());
+
+        User createdUser = userRepository.save(payload);
+        publisher.publishEvent(new UserCreatedEvent(createdUser));
+
+        return createdUser.getId();
+    }
+
+    @Override
+    public IUser getByToken(Authentication auth) {
+        return userMapper.map((User) auth.getPrincipal());
     }
 
     @Override
@@ -72,6 +86,13 @@ public class UserServiceImpl implements UserService {
         String errorMessage = "No user found with ID: " + userId;
 
         return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(errorMessage));
+    }
+
+    @Override
+    public User getEntity(String email) {
+        String errorMessage = "No user found with email: " + email;
+
+        return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException(errorMessage));
     }
 
     private User copyNonNullValues(UpdateUserDto payload) {
@@ -113,5 +134,9 @@ public class UserServiceImpl implements UserService {
 
     private Role getRoleInfo(UUID roleId) {
         return roleService.getEntity(roleId);
+    }
+
+    private String generatePassword() {
+        return passwordEncoder.encode("Pass@123");
     }
 }
