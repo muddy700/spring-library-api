@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +38,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Retrieve details of authenticated user by token.", description = "Some description.")
     public IUser getUserProfile() {
         logRequest("GET", "/me");
@@ -45,6 +47,7 @@ public class UserController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('create_user')")
     @Operation(summary = "Create a new user.", description = "Some description.")
     public ISuccess createUser(@Valid @RequestBody UserDto payload) {
         logRequest("POST", "");
@@ -53,6 +56,7 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('view_user')")
     @Operation(summary = "Retrieve all users.", description = "Some description.")
     public IPage<IUserV2> getAllUsers(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -62,6 +66,7 @@ public class UserController {
     }
 
     @GetMapping("{id}")
+    @PreAuthorize("hasAuthority('view_user')")
     @Operation(summary = "Retrieve a single user by id.", description = "Some description.")
     public IUser getUserById(@PathVariable("id") UUID userId) {
         logRequest("GET", "/" + userId);
@@ -70,6 +75,7 @@ public class UserController {
     }
 
     @PutMapping("{id}")
+    @PreAuthorize("hasAuthority('update_user')")
     @Operation(summary = "Update user details.", description = "Some description.")
     public ISuccess updateUser(@PathVariable("id") UUID userId, @Valid @RequestBody UpdateUserDto payload) {
         logRequest("PUT", "/" + userId);
@@ -79,6 +85,7 @@ public class UserController {
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasAuthority('delete_user')")
     @Operation(summary = "Delete a single user by id.", description = "Some description.")
     public ISuccess deleteUserById(@PathVariable("id") UUID userId) {
         logRequest("DELETE", "/" + userId);

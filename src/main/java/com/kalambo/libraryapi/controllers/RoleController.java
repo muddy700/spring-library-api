@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +38,7 @@ public class RoleController {
     private RoleService roleService;
 
     @PostMapping
+    @PreAuthorize("hasAuthority('create_role')")
     @Operation(summary = "Create a new role.", description = "Some description.")
     public ISuccess createRole(@Valid @RequestBody RoleDto payload) {
         logRequest("POST", "");
@@ -45,6 +47,7 @@ public class RoleController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('view_role')")
     @Operation(summary = "Retrieve all roles.", description = "Some description.")
     public IPage<IRoleV2> getAllRoles(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -54,6 +57,7 @@ public class RoleController {
     }
 
     @GetMapping("{id}")
+    @PreAuthorize("hasAuthority('view_role')")
     @Operation(summary = "Retrieve a single role by id.", description = "Some description.")
     public IRole getRoleById(@PathVariable("id") UUID roleId) {
         logRequest("GET", "/" + roleId);
@@ -62,6 +66,7 @@ public class RoleController {
     }
 
     @PutMapping("{id}")
+    @PreAuthorize("hasAuthority('update_role')")
     @Operation(summary = "Update role details.", description = "Some description.")
     public ISuccess updateRole(@PathVariable("id") UUID roleId, @RequestBody UpdateRoleDto payload) {
         logRequest("PUT", "/" + roleId);
@@ -71,6 +76,7 @@ public class RoleController {
     }
 
     @PutMapping("{id}/manage-permissions")
+    @PreAuthorize("hasAuthority('manage_permissions')")
     @Operation(summary = "Manage role's permissions.", description = "Some description.")
     public ISuccess managePermissions(@PathVariable("id") UUID roleId, @RequestBody UpdatePermissionDto payload) {
         logRequest("PUT", "/" + roleId + "/manage-permissions");
@@ -80,6 +86,7 @@ public class RoleController {
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasAuthority('delete_role')")
     @Operation(summary = "Delete a single role by id.", description = "Some description.")
     public ISuccess deleteRoleById(@PathVariable("id") UUID roleId) {
         logRequest("DELETE", "/" + roleId);

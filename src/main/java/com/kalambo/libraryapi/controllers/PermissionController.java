@@ -2,6 +2,7 @@ package com.kalambo.libraryapi.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +26,7 @@ public class PermissionController {
     private PermissionService permissionService;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('view_permission')")
     @Operation(summary = "Retrieve all permissions.", description = "Some description.")
     public IPage<IPermissionV2> getAllPermissions(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {

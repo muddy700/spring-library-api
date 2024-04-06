@@ -48,4 +48,5 @@
  * 1. One author cannot have multiple books with the same name.
  * 2. One user can only add one review for each single book.
  * 3. One user can only have one role.
+ * 4. Only users with Student role can add a review.
  */

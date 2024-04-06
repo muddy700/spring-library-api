@@ -59,7 +59,7 @@ public class PermissionSeeder {
         String[] creatableResources = { "Task", "Role", "User" };
 
         // Add resources/entities that need permission for 'Read' operation.
-        String[] viewableResources = { "Task", "Permission", "Role", "User" };
+        String[] viewableResources = { "Task", "Permission", "Role", "User", "AuditTrail" };
 
         // Add resources/entities that need permission for 'Update' operation.
         String[] updatebleResources = { "Task", "Role", "User" };

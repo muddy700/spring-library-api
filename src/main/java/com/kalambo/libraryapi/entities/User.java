@@ -1,5 +1,6 @@
 package com.kalambo.libraryapi.entities;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.kalambo.libraryapi.entities.abstracts.BaseEntity;
@@ -75,7 +77,14 @@ public class User extends BaseEntity implements UserDetails {
     // For security implementations
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+
+        role.getPermissions()
+                .forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission.getAction())));
+
+        return authorities;
     }
 
     @Override

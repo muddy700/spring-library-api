@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,7 @@ public class AuditTrailController {
     private AuditTrailService auditTrailService;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('view_audittrail')")
     @Operation(summary = "Retrieve all audit-trails.", description = "Some description.")
     public IPage<IAuditTrailV2> getAllAuditTrails(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -37,6 +39,7 @@ public class AuditTrailController {
     }
 
     @GetMapping("{id}")
+    @PreAuthorize("hasAuthority('view_audittrail')")
     @Operation(summary = "Retrieve a single audit-trail by id.", description = "Some description.")
     public IAuditTrail getAuditTrailById(@PathVariable("id") UUID auditTrailId) {
         logRequest("GET", "/" + auditTrailId);

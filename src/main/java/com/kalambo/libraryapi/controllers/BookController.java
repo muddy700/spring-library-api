@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,6 +39,7 @@ public class BookController {
     private BookService bookService;
 
     @PostMapping
+    @PreAuthorize("hasAuthority('create_book')")
     @Operation(summary = "Add a book.", description = "Some description.")
     public ISuccess createBook(@Valid @RequestBody BookDto payload) {
         logRequest("POST", "");
@@ -46,6 +48,7 @@ public class BookController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('view_book')")
     @Operation(summary = "Retrieve all books.", description = "Some description.")
     public IPage<IBookV2> getAllBooks(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -55,6 +58,7 @@ public class BookController {
     }
 
     @GetMapping("{id}")
+    @PreAuthorize("hasAuthority('view_book')")
     @Operation(summary = "Retrieve a single book by id.", description = "Some description.")
     public IBook getBookById(@PathVariable("id") UUID bookId) {
         logRequest("GET", "/" + bookId);
@@ -63,6 +67,7 @@ public class BookController {
     }
 
     @PutMapping("{id}")
+    @PreAuthorize("hasAuthority('update_book')")
     @Operation(summary = "Update book details.", description = "Some description.")
     public ISuccess updateBook(@PathVariable("id") UUID bookId, @RequestBody UpdateBookDto payload) {
         logRequest("PUT", "/" + bookId);
@@ -72,6 +77,7 @@ public class BookController {
     }
 
     @PostMapping("{id}/reviews")
+    @PreAuthorize("hasRole('Student')")
     @Operation(summary = "Add review into a book.", description = "Some description.")
     public ISuccess addReview(@PathVariable("id") UUID bookId, @Valid @RequestBody BookReviewDto payload) {
         logRequest("POST", "/" + bookId + "/reviews");
@@ -81,6 +87,7 @@ public class BookController {
     }
 
     @PutMapping("{bookId}/reviews/{reviewId}")
+    @PreAuthorize("hasRole('Student')")
     @Operation(summary = "Update book's review info.", description = "Some description.")
     public ISuccess updateReview(@PathVariable("bookId") UUID bookId,
             @PathVariable("reviewId") UUID reviewId, @Valid @RequestBody UpdateBookReviewDto payload) {
@@ -91,6 +98,7 @@ public class BookController {
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasAuthority('delete_book')")
     @Operation(summary = "Delete a single book by id.", description = "Some description.")
     public ISuccess deleteBookById(@PathVariable("id") UUID bookId) {
         logRequest("DELETE", "/" + bookId);
