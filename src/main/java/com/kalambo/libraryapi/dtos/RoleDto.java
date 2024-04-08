@@ -8,15 +8,14 @@ import com.kalambo.libraryapi.entities.Role;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 @Data
-@Accessors(chain = true)
-@AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
+
 public class RoleDto {
     @NotBlank(message = "Role name is required")
     @Size(min = 4, max = 25)

@@ -22,6 +22,7 @@ import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IRole;
 import com.kalambo.libraryapi.responses.IRoleV2;
 import com.kalambo.libraryapi.responses.ISuccess;
+import com.kalambo.libraryapi.services.AuthService;
 import com.kalambo.libraryapi.services.RoleService;
 import com.kalambo.libraryapi.utilities.GlobalUtil;
 
@@ -36,6 +37,12 @@ import jakarta.validation.Valid;
 public class RoleController {
     @Autowired
     private RoleService roleService;
+
+    @Autowired
+    private GlobalUtil globalUtil;
+
+    @Autowired
+    private AuthService authService;
 
     @PostMapping
     @PreAuthorize("hasAuthority('create_role')")
@@ -76,7 +83,7 @@ public class RoleController {
     }
 
     @PutMapping("{id}/manage-permissions")
-    @PreAuthorize("hasAuthority('manage_permissions')")
+    @PreAuthorize("hasAuthority('manage_permission')")
     @Operation(summary = "Manage role's permissions.", description = "Some description.")
     public ISuccess managePermissions(@PathVariable("id") UUID roleId, @RequestBody UpdatePermissionDto payload) {
         logRequest("PUT", "/" + roleId + "/manage-permissions");
@@ -100,6 +107,6 @@ public class RoleController {
     }
 
     private void logRequest(String httpMethod, String endpoint) {
-        GlobalUtil.logRequest(httpMethod, "roles" + endpoint);
+        globalUtil.logRequest(httpMethod, "roles" + endpoint, authService.getPrincipalUsername());
     }
 }

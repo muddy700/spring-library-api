@@ -1,15 +1,14 @@
 package com.kalambo.libraryapi.seeders;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kalambo.libraryapi.dtos.ActionDto;
 import com.kalambo.libraryapi.dtos.PermissionDto;
-import com.kalambo.libraryapi.entities.Permission;
 import com.kalambo.libraryapi.repositories.PermissionRepository;
 import com.kalambo.libraryapi.services.PermissionService;
 
@@ -18,11 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class PermissionSeeder {
-    /**
-     * ! Use repositories only for 'Read' operations and
-     * Services for other operations(Create, Update and Delete)
-     */
-
     private Integer totalPermissionsCreated = 0;
 
     @Autowired
@@ -35,19 +29,21 @@ public class PermissionSeeder {
         log.info("Starting Permissions seeding...");
 
         try {
-            final List<ActionDto> actions = getAllowedActions();
-
-            for (ActionDto action : actions) {
+            // Seed auto-configured permissions
+            for (ActionDto action : getAllowedActions()) {
                 action.getResources()
                         .forEach(resource -> savePermission(buildPermissionDto(resource, action.getName())));
             }
+
+            // Seed special permissions
+            getSpecialPermissions().forEach(permissionDto -> savePermission(permissionDto));
 
             if (totalPermissionsCreated > 0)
                 log.info("Permissions seeding completed, " + totalPermissionsCreated + " Permission(s) added.");
             else
                 log.info("Permissions seeding skipped, no new permission(s) to add.");
-        } catch (Exception e) {
-            log.error("Failed to seed Permissions: " + e.getMessage(), e);
+        } catch (Exception ex) {
+            log.error("Failed to seed Permissions: " + ex.getMessage(), ex);
             log.info(totalPermissionsCreated + " Permission(s) added.");
         }
     }
@@ -56,16 +52,16 @@ public class PermissionSeeder {
         List<ActionDto> actions = new ArrayList<ActionDto>();
 
         // Add resources/entities that need permission for 'Create' operation.
-        String[] creatableResources = { "Task", "Role", "User" };
+        String[] creatableResources = { "Role", "User", "Book" };
 
         // Add resources/entities that need permission for 'Read' operation.
-        String[] viewableResources = { "Task", "Permission", "Role", "User", "AuditTrail" };
+        String[] viewableResources = { "Permission", "Role", "User", "AuditTrail", "Book" };
 
         // Add resources/entities that need permission for 'Update' operation.
-        String[] updatebleResources = { "Task", "Role", "User" };
+        String[] updatebleResources = { "Role", "User", "Book" };
 
         // Add resources/entities that need permission for 'Delete' operation.
-        String[] deletableResources = { "Task", "Role", "User" };
+        String[] deletableResources = { "Role", "User", "Book" };
 
         // Link CRUD operations with their applicable resources, as listed above.
         // For 'Create' operation.
@@ -84,33 +80,28 @@ public class PermissionSeeder {
     }
 
     private ActionDto buildActionDto(String name, String[] resources) {
-        ActionDto actionDto = new ActionDto().setName(name);
-        return appendResources(actionDto, resources);
-    }
-
-    private ActionDto appendResources(ActionDto actionDto, String[] resources) {
-        for (String resource : resources) {
-            actionDto.addResource(resource);
-        }
-
-        return actionDto;
+        return new ActionDto(name, Arrays.asList(resources));
     }
 
     private PermissionDto buildPermissionDto(String resourceName, String action) {
-        String description = "Can " + action + " " + resourceName + "(s).";
-
-        PermissionDto payload = new PermissionDto().setResourceName(resourceName)
-                .setAction(action + "_" + resourceName.toLowerCase()).setDescription(description);
-
-        return payload;
+        return new PermissionDto().setResourceName(resourceName)
+                .setAction(action + "_" + resourceName.toLowerCase())
+                .setDescription("Can " + action + " " + resourceName + "(s).");
     }
 
     private void savePermission(PermissionDto payload) {
-        Optional<Permission> optionalPermission = permissionRepository.findByAction(payload.getAction());
-
-        if (!optionalPermission.isPresent()) {
+        if (!permissionRepository.findByAction(payload.getAction()).isPresent()) {
             permissionService.create(payload);
             totalPermissionsCreated += 1;
         }
+    }
+
+    private List<PermissionDto> getSpecialPermissions() {
+        List<PermissionDto> dtos = new ArrayList<PermissionDto>();
+
+        dtos.add(new PermissionDto().setAction("manage_permission")
+                .setResourceName("Role").setDescription("Can add and remove  permission(s) to and from the role"));
+
+        return dtos;
     }
 }

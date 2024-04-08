@@ -8,15 +8,14 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 @Data
-@Accessors(chain = true)
-@AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
+
 public class UserDto {
     @NotBlank(message = "Email is required")
     @Size(min = 5, max = 40)
@@ -41,7 +40,6 @@ public class UserDto {
 
     public User toEntity() {
         return new User()
-                .setFullName(fullName).setGender(gender)
-                .setEmail(email).setPhoneNumber(phoneNumber);
+                .setFullName(fullName).setGender(gender).setEmail(email).setPhoneNumber(phoneNumber);
     }
 }

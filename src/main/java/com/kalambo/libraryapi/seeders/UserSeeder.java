@@ -8,10 +8,11 @@ import org.springframework.stereotype.Component;
 
 import com.kalambo.libraryapi.dtos.UserDto;
 import com.kalambo.libraryapi.entities.Role;
-import com.kalambo.libraryapi.entities.User;
+import com.kalambo.libraryapi.enums.RoleEnum;
 import com.kalambo.libraryapi.repositories.RoleRepository;
 import com.kalambo.libraryapi.repositories.UserRepository;
 import com.kalambo.libraryapi.services.UserService;
+import com.kalambo.libraryapi.utilities.GlobalUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,37 +32,28 @@ public class UserSeeder {
         log.info("Starting Users seeding...");
 
         try {
-            UUID roleId = getRoleId("Admin");
+            UUID roleId = getRoleId(capitalize(RoleEnum.ADMIN));
 
             if (roleId != null)
                 saveUser(buildUserDto(roleId));
             else
                 log.info("Users seeding skipped, Administrator Role was not found.");
 
-        } catch (Exception e) {
-            log.error("Failed to seed Users: " + e.getMessage(), e);
+        } catch (Exception ex) {
+            log.error("Failed to seed Users: " + ex.getMessage(), ex);
         }
     }
 
     private UserDto buildUserDto(UUID roleId) {
-        // Details for System Admin.
-        String email = "mohamedmfaume700@gmail.com";
-        String name = "Mohamed Mfaume Mohamed";
-        String phone = "255717963697";
-
-        UserDto payload = new UserDto().setEmail(email).setRoleId(roleId)
-                .setFullName(name).setPhoneNumber(phone).setGender("M");
-
-        return payload;
+        // Details for the System Admin.
+        return new UserDto().setEmail("mohamedmfaume700@gmail.com").setRoleId(roleId)
+                .setFullName("Mohamed Mfaume Mohamed").setPhoneNumber("255717963697").setGender("M");
     }
 
     private void saveUser(UserDto payload) {
-        Optional<User> optionalUser = userRepository.findByEmail(payload.getEmail());
-
-        if (optionalUser.isPresent()) {
-            log.info("User with admin details, already exist.");
+        if (userRepository.findByEmail(payload.getEmail()).isPresent())
             log.info("Users seeding skipped, no new user(s) to add.");
-        } else {
+        else {
             userService.create(payload);
             log.info("Users seeding completed, System Admin added.");
         }
@@ -74,5 +66,9 @@ public class UserSeeder {
             return optionalRole.get().getId();
         else
             return null;
+    }
+
+    private String capitalize(RoleEnum enumValue) {
+        return GlobalUtil.capitalizeFirstLetter(enumValue.name());
     }
 }

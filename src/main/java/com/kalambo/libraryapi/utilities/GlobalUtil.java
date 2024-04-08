@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import com.kalambo.libraryapi.responses.ISuccess;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,19 @@ public class GlobalUtil {
         return new ISuccess(message, resourceId);
     }
 
-    public static void logRequest(String httpMethod, String endpoint) {
-        log.info(httpMethod + " - /api/v1/" + endpoint);
+    public void logRequest(String httpMethod, String endpoint) {
+        log.info(formatLogEntry(httpMethod, endpoint));
+    }
+
+    public void logRequest(String httpMethod, String endpoint, String username) {
+        log.info(formatLogEntry(httpMethod, endpoint) + ", username: " + username);
+    }
+
+    private String formatLogEntry(String httpMethod, String endpoint) {
+        return httpMethod + " - /api/v1/" + endpoint;
+    }
+
+    public static String capitalizeFirstLetter(String word) {
+        return StringUtils.capitalize(word.toLowerCase());
     }
 }

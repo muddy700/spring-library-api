@@ -67,6 +67,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public final IError handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
         String description = "You are not authorized to access this resource";
+
+        if (ex.getMessage() != "Access Denied")
+            description = ex.getMessage();
+
         return formatError(ex, request, "Access Denied", description);
     }
 

@@ -15,6 +15,7 @@ import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IAuditTrail;
 import com.kalambo.libraryapi.responses.IAuditTrailV2;
 import com.kalambo.libraryapi.services.AuditTrailService;
+import com.kalambo.libraryapi.services.AuthService;
 import com.kalambo.libraryapi.utilities.GlobalUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +28,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class AuditTrailController {
     @Autowired
     private AuditTrailService auditTrailService;
+
+    @Autowired
+    private GlobalUtil globalUtil;
+
+    @Autowired
+    private AuthService authService;
 
     @GetMapping
     @PreAuthorize("hasAuthority('view_audittrail')")
@@ -48,6 +55,6 @@ public class AuditTrailController {
     }
 
     private void logRequest(String httpMethod, String endpoint) {
-        GlobalUtil.logRequest(httpMethod, "audit-trails" + endpoint);
+        globalUtil.logRequest(httpMethod, "audit-trails" + endpoint, authService.getPrincipalUsername());
     }
 }

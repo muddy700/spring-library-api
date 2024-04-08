@@ -1,9 +1,12 @@
 package com.kalambo.libraryapi.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.LoginDto;
@@ -31,5 +34,20 @@ public class AuthServiceImpl implements AuthService {
         long expirationTime = jwtService.getExpirationTime();
 
         return new ILogin(authToken, expirationTime, userMapper.map(user));
+    }
+
+    @Override
+    public User getPrincipal() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth instanceof AnonymousAuthenticationToken)
+            throw new AccessDeniedException("Request not authenticated");
+
+        return (User) auth.getPrincipal();
+    }
+
+    @Override
+    public String getPrincipalUsername() {
+        return getPrincipal().getUsername();
     }
 }

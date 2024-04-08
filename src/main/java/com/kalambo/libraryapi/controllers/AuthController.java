@@ -23,15 +23,18 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private GlobalUtil globalUtil;
+
     @PostMapping("/login")
     @Operation(summary = "Authenticate user.", description = "Some description.")
     public ILogin authenticate(@RequestBody @Valid LoginDto loginPayload) {
-        logRequest("POST", "/login");
+        logRequest("POST", "/login", loginPayload.getEmail());
 
         return authService.authenticate(loginPayload);
     }
 
-    private void logRequest(String httpMethod, String endpoint) {
-        GlobalUtil.logRequest(httpMethod, "auth" + endpoint);
+    private void logRequest(String httpMethod, String endpoint, String username) {
+        globalUtil.logRequest(httpMethod, "auth" + endpoint, username);
     }
 }

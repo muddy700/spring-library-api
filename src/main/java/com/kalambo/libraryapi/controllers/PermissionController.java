@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IPermissionV2;
+import com.kalambo.libraryapi.services.AuthService;
 import com.kalambo.libraryapi.services.PermissionService;
 import com.kalambo.libraryapi.utilities.GlobalUtil;
 
@@ -25,6 +26,12 @@ public class PermissionController {
     @Autowired
     private PermissionService permissionService;
 
+    @Autowired
+    private GlobalUtil globalUtil;
+
+    @Autowired
+    private AuthService authService;
+
     @GetMapping
     @PreAuthorize("hasAuthority('view_permission')")
     @Operation(summary = "Retrieve all permissions.", description = "Some description.")
@@ -36,6 +43,6 @@ public class PermissionController {
     }
 
     private void logRequest(String httpMethod, String endpoint) {
-        GlobalUtil.logRequest(httpMethod, "permissions" + endpoint);
+        globalUtil.logRequest(httpMethod, "permissions" + endpoint, authService.getPrincipalUsername());
     }
 }

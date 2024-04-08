@@ -14,6 +14,7 @@ import com.kalambo.libraryapi.dtos.groups.OnCreate;
 import com.kalambo.libraryapi.dtos.groups.OnUpdate;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.ITask;
+import com.kalambo.libraryapi.services.AuthService;
 import com.kalambo.libraryapi.services.TaskService;
 import com.kalambo.libraryapi.utilities.GlobalUtil;
 
@@ -35,6 +36,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class TaskController {
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private GlobalUtil globalUtil;
 
     @PostMapping
     @Validated(OnCreate.class)
@@ -81,6 +85,6 @@ public class TaskController {
     }
 
     private void logRequest(String httpMethod, String endpoint) {
-        GlobalUtil.logRequest(httpMethod, "tasks" + endpoint);
+        globalUtil.logRequest(httpMethod, "tasks" + endpoint);
     }
 }

@@ -23,6 +23,7 @@ import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.ISuccess;
 import com.kalambo.libraryapi.responses.IBook;
 import com.kalambo.libraryapi.responses.IBookV2;
+import com.kalambo.libraryapi.services.AuthService;
 import com.kalambo.libraryapi.services.BookService;
 import com.kalambo.libraryapi.utilities.GlobalUtil;
 
@@ -37,6 +38,12 @@ import jakarta.validation.Valid;
 public class BookController {
     @Autowired
     private BookService bookService;
+
+    @Autowired
+    private GlobalUtil globalUtil;
+
+    @Autowired
+    private AuthService authService;
 
     @PostMapping
     @PreAuthorize("hasAuthority('create_book')")
@@ -112,6 +119,6 @@ public class BookController {
     }
 
     private void logRequest(String httpMethod, String endpoint) {
-        GlobalUtil.logRequest(httpMethod, "books" + endpoint);
+        globalUtil.logRequest(httpMethod, "books" + endpoint, authService.getPrincipalUsername());
     }
 }

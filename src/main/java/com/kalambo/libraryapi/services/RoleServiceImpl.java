@@ -1,15 +1,18 @@
 package com.kalambo.libraryapi.services;
 
 import java.util.UUID;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.RoleDto;
 import com.kalambo.libraryapi.dtos.UpdatePermissionDto;
 import com.kalambo.libraryapi.dtos.UpdateRoleDto;
 import com.kalambo.libraryapi.entities.Role;
+import com.kalambo.libraryapi.enums.RoleEnum;
 import com.kalambo.libraryapi.exceptions.ResourceDuplicationException;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
 import com.kalambo.libraryapi.mappers.PageMapper;
@@ -19,6 +22,7 @@ import com.kalambo.libraryapi.repositories.RoleRepository;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IRole;
 import com.kalambo.libraryapi.responses.IRoleV2;
+import com.kalambo.libraryapi.utilities.GlobalUtil;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -101,7 +105,9 @@ public class RoleServiceImpl implements RoleService {
 
         // Append all updatable fields here.
         if (payload.getName() != null) {
+            preserveDefaultRoles(roleInfo);
             checkDuplication(payload.getName());
+
             roleInfo.setName(payload.getName());
         }
 
@@ -112,5 +118,16 @@ public class RoleServiceImpl implements RoleService {
             roleInfo.setActive(payload.getActive());
 
         return roleInfo;
+    }
+
+    private void preserveDefaultRoles(Role role) {
+        List<String> defaultRoles = List.of(capitalize(RoleEnum.ADMIN), capitalize(RoleEnum.STUDENT));
+
+        if (defaultRoles.contains(role.getName()))
+            throw new AccessDeniedException("The role name 'Admin' and 'Student' cannot be changed.");
+    }
+
+    private String capitalize(RoleEnum enumValue) {
+        return GlobalUtil.capitalizeFirstLetter(enumValue.name());
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.UserDto;
+import com.github.javafaker.Faker;
 import com.kalambo.libraryapi.dtos.UpdateUserDto;
 import com.kalambo.libraryapi.entities.Role;
 import com.kalambo.libraryapi.entities.User;
@@ -43,6 +44,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private String generatedPassword;
+
     @Override
     public UUID create(UserDto userDto) {
         checkDuplication(userDto.getEmail());
@@ -51,7 +54,7 @@ public class UserServiceImpl implements UserService {
                 .setRole(getRoleInfo(userDto.getRoleId())).setPassword(generatePassword());
 
         User createdUser = userRepository.save(payload);
-        publisher.publishEvent(new UserCreatedEvent(createdUser));
+        publisher.publishEvent(new UserCreatedEvent(createdUser.setPassword(generatedPassword)));
 
         return createdUser.getId();
     }
@@ -136,7 +139,9 @@ public class UserServiceImpl implements UserService {
         return roleService.getEntity(roleId);
     }
 
-    private String generatePassword() {
-        return passwordEncoder.encode("Pass@123");
+    private final String generatePassword() {
+        generatedPassword = new Faker().regexify("[a-z1-9A-Z]{8}");
+
+        return passwordEncoder.encode(generatedPassword);
     }
 }

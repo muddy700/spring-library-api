@@ -22,6 +22,7 @@ import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.ISuccess;
 import com.kalambo.libraryapi.responses.IUser;
 import com.kalambo.libraryapi.responses.IUserV2;
+import com.kalambo.libraryapi.services.AuthService;
 import com.kalambo.libraryapi.services.UserService;
 import com.kalambo.libraryapi.utilities.GlobalUtil;
 
@@ -36,6 +37,12 @@ import jakarta.validation.Valid;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private GlobalUtil globalUtil;
+
+    @Autowired
+    private AuthService authService;
 
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
@@ -99,6 +106,6 @@ public class UserController {
     }
 
     private void logRequest(String httpMethod, String endpoint) {
-        GlobalUtil.logRequest(httpMethod, "users" + endpoint);
+        globalUtil.logRequest(httpMethod, "users" + endpoint, authService.getPrincipalUsername());
     }
 }

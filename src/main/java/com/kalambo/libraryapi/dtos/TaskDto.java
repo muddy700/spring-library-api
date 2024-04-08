@@ -12,7 +12,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,9 +19,9 @@ import lombok.experimental.Accessors;
 
 @Setter
 @Getter
-@Accessors(chain = true)
-@AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
+
 public class TaskDto {
     @Null(groups = OnCreate.class, message = "Who told you to pass id..?")
     private Integer id;
@@ -48,7 +47,7 @@ public class TaskDto {
     @Null(groups = OnCreate.class, message = "Do not pass published when creating a task")
     @AssertTrue(groups = OnUpdate.class, message = "Published value must be true")
     private Boolean published;
- 
+
     public Task toEntity() {
         return new Task().setTitle(title).setMaxDuration(maxDuration)
                 .setAuthorName(authorName).setAuthorEmail(authorEmail);

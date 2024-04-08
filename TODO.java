@@ -2,9 +2,7 @@
 
 /*
  * 1. Use 'private' for all Autowired variables in all classes
- * 
- * 2. Add actor email in the logs ie.. GET - /api/v1/users/ by user1@gmail.com
- * 
+ * *
  * 3. Add controller and service for generating system reports within a certain
  * date range eg..
  * - Books added/removed
@@ -49,4 +47,6 @@
  * 2. One user can only add one review for each single book.
  * 3. One user can only have one role.
  * 4. Only users with Student role can add a review.
+ * 5. Students can only update their own profiles.
+ * 6.
  */

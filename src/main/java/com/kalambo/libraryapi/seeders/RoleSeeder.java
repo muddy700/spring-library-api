@@ -1,30 +1,27 @@
 package com.kalambo.libraryapi.seeders;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kalambo.libraryapi.dtos.RoleDto;
+import com.kalambo.libraryapi.entities.Permission;
 import com.kalambo.libraryapi.entities.Role;
+import com.kalambo.libraryapi.enums.RoleEnum;
 import com.kalambo.libraryapi.repositories.PermissionRepository;
 import com.kalambo.libraryapi.repositories.RoleRepository;
 import com.kalambo.libraryapi.services.RoleService;
+import com.kalambo.libraryapi.utilities.GlobalUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
-// TODO: Refactor this file to optimize queries
 @Component
 @Slf4j
 public class RoleSeeder {
-    /**
-     * ! Use repositories only for 'Read' operations and
-     * Services for other operations(Create, Update and Delete)
-     */
-
     @Autowired
     private RoleService roleService;
 
@@ -34,33 +31,75 @@ public class RoleSeeder {
     @Autowired
     private PermissionRepository permissionRepository;
 
+    private List<Permission> allSystemPermisions, studentPermissions = new ArrayList<Permission>();
+
+    private String adminRoleName, studentRoleName;
+
     public void seed() {
         log.info("Starting Roles seeding...");
 
         try {
-            saveRole(buildRoleDto("Admin"));
-        } catch (Exception e) {
-            log.error("Failed to seed Roles: " + e.getMessage(), e);
+            initializeVariables();
+            prepareRolesDtos().forEach(roleDto -> attachPermissions(saveRole(roleDto)));
+
+            log.info("Roles seeding completed.");
+        } catch (Exception ex) {
+            log.error("Failed to seed Roles: " + ex.getMessage(), ex);
         }
     }
 
-    private RoleDto buildRoleDto(String name) {
-        List<UUID> permissionsIds = new ArrayList<UUID>();
-        permissionRepository.findAll().forEach(permission -> permissionsIds.add(permission.getId()));
+    private void initializeVariables() {
+        adminRoleName = capitalize(RoleEnum.ADMIN);
+        studentRoleName = capitalize(RoleEnum.STUDENT);
 
-        String description = "Role for the overall system administrator who can perform anything.";
-        return new RoleDto().setName(name).setDescription(description).setPermissionsIds(permissionsIds);
+        allSystemPermisions = permissionRepository.findAll();
+        List<String> studentActions = Arrays.asList("view_book");
+
+        for (Permission permission : allSystemPermisions) {
+            if (studentActions.contains(permission.getAction()))
+                studentPermissions.add(permission);
+        }
     }
 
-    private void saveRole(RoleDto payload) {
+    private List<RoleDto> prepareRolesDtos() {
+        List<RoleDto> dtos = new ArrayList<RoleDto>(2);
+
+        // For the role: Admin
+        dtos.add(new RoleDto().setName(adminRoleName)
+                .setDescription("Role for the overall system administrator who can perform anything."));
+
+        // For the role: Student
+        dtos.add(new RoleDto().setName(studentRoleName).setDescription("Role for students."));
+
+        return dtos;
+    }
+
+    private Role saveRole(RoleDto payload) {
         Optional<Role> optionalRole = roleRepository.findByName(payload.getName());
 
-        if (optionalRole.isPresent()) {
-            log.info("Role for System Administrators, already exist.");
-            log.info("Roles seeding skipped, no new role(s) to add.");
-        } else {
-            roleService.create(payload);
-            log.info("Roles seeding completed, a new role for System Administrators added.");
-        }
+        if (optionalRole.isPresent())
+            return optionalRole.get();
+        else
+            return roleService.getEntity(roleService.create(payload));
+    }
+
+    private void attachPermissions(Role role) {
+        if (role.getName().equals(adminRoleName))
+            role.addPermissions(removeDuplicates(allSystemPermisions, role));
+
+        else if (role.getName().equals(studentRoleName))
+            role.addPermissions(removeDuplicates(studentPermissions, role));
+
+        roleRepository.save(role);
+    }
+
+    private List<Permission> removeDuplicates(List<Permission> permissionsPayload, Role role) {
+        permissionsPayload.removeIf(payload -> role.getPermissions().contains(payload));
+
+        return permissionsPayload;
+    }
+
+    private String capitalize(RoleEnum enumValue) {
+        return GlobalUtil.capitalizeFirstLetter(enumValue.name());
     }
 }
