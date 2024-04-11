@@ -28,11 +28,10 @@ public class UpdateBookDto {
 
         for (Field field : Arrays.asList(UpdateBookDto.class.getDeclaredFields())) {
             try {
-                if (field.getName() == "id" || field.get(this) == null)
-                    return null;
-                    
-                result += result.length() > 0 ? ", " : "";
-                result += field.getName() + "=" + field.get(this).toString();
+                if (field.getName() != "id" && field.get(this) != null) {
+                    result += result.length() > 0 ? ", " : "";
+                    result += field.getName() + "=" + field.get(this).toString();
+                }
             } catch (Exception ex) {
                 // TODO: handle exception
             }
