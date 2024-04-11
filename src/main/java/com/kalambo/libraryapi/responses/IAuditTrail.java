@@ -14,10 +14,8 @@ import lombok.experimental.Accessors;
 public class IAuditTrail {
     private UUID id;
     private String action;
+    private UUID resourceId;
     private String resourceName;
-
-    private String resourceId;
-    private String description;
 
     private String updatedValues;
     private String previousValues;

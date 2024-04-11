@@ -20,6 +20,7 @@ import com.kalambo.libraryapi.mappers.PageMapper;
 import com.kalambo.libraryapi.mappers.BookMapper;
 import com.kalambo.libraryapi.repositories.BookRepository;
 import com.kalambo.libraryapi.responses.IPage;
+import com.kalambo.libraryapi.utilities.GlobalUtil;
 import com.kalambo.libraryapi.responses.IBook;
 import com.kalambo.libraryapi.responses.IBookReviewV2;
 import com.kalambo.libraryapi.responses.IBookV2;
@@ -41,12 +42,17 @@ public class BookServiceImpl implements BookService {
     @Autowired
     private ApplicationEventPublisher publisher;
 
+    @Autowired
+    private GlobalUtil globalUtil;
+
     @Override
     public UUID create(BookDto bookDto) {
         checkDuplication(bookDto.getTitle(), bookDto.getAuthorName());
         Book book = bookRepository.save(bookDto.toEntity().setRegistrationNumber(generateRegNo()));
 
         publisher.publishEvent(new BookCreatedEvent(book));
+        trackRequest("create", book, bookDto.toString());
+
         return book.getId();
     }
 
@@ -62,12 +68,18 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void update(UpdateBookDto payload) {
+        Book bookInfoBeforeUpdate = getEntity(payload.getId());
+
         bookRepository.save(copyNonNullValues(payload));
+        trackRequest("update", bookInfoBeforeUpdate, payload.toString());
     }
 
     @Override
     public void delete(UUID bookId) {
-        bookRepository.delete(getEntity(bookId));
+        Book targetBook = getEntity(bookId);
+
+        bookRepository.delete(targetBook);
+        trackRequest("delete", targetBook, null);
     }
 
     @Override
@@ -145,5 +157,9 @@ public class BookServiceImpl implements BookService {
         }
 
         return iBook.setRatings(ratings / iBook.getReviews().size());
+    }
+
+    private void trackRequest(String action, Book book, String requestDto) {
+        globalUtil.trackRequest(action, "Book", book.getId(), book.toString(), requestDto);
     }
 }

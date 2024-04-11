@@ -19,7 +19,7 @@ import com.kalambo.libraryapi.responses.IAuditTrailV2;
 @Service
 public class AuditTrailServiceImpl implements AuditTrailService {
     @Autowired
-    private UserService userService;
+    private AuthService authService;
 
     @Autowired
     private AuditTrailRepository auditTrailRepository;
@@ -32,7 +32,7 @@ public class AuditTrailServiceImpl implements AuditTrailService {
 
     @Override
     public void create(AuditTrailDto payload) {
-        auditTrailRepository.save(payload.toEntity().setUser(userService.getEntity(payload.getUserId())));
+        auditTrailRepository.save(payload.toEntity().setUser(authService.getPrincipal()));
     }
 
     @Override

@@ -8,7 +8,9 @@ import com.kalambo.libraryapi.entities.Book;
 import com.kalambo.libraryapi.entities.Task;
 import com.kalambo.libraryapi.entities.User;
 import com.kalambo.libraryapi.services.MailService;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class MailNotifier {
     @Autowired
@@ -26,10 +28,12 @@ public class MailNotifier {
     }
 
     public void onUserCreation(User user) {
+        log.info("User created: " + user.toString());
         // TODO: Notify user about the account creation and send them credentials here
     }
 
     public void onBookCreation(Book book) {
-        // TODO: Notify students who subscribed about the new book added and send them link to view it
+        // TODO: Notify students who subscribed about the new book added and send them
+        // link to view it
     }
 }

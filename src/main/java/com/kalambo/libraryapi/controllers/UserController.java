@@ -102,7 +102,7 @@ public class UserController {
     }
 
     private final ISuccess successResponse(String action, UUID resourceId) {
-        return GlobalUtil.formatResponse("User", action, resourceId);
+        return globalUtil.formatResponse("User", action, resourceId);
     }
 
     private void logRequest(String httpMethod, String endpoint) {

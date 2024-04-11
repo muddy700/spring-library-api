@@ -115,7 +115,7 @@ public class BookController {
     }
 
     private final ISuccess successResponse(String action, UUID resourceId) {
-        return GlobalUtil.formatResponse("Book", action, resourceId);
+        return globalUtil.formatResponse("Book", action, resourceId);
     }
 
     private void logRequest(String httpMethod, String endpoint) {

@@ -19,7 +19,7 @@ public class AuditTrailMapper {
                 .setId(auditTrail.getId()).setCreatedAt(auditTrail.getCreatedAt())
                 .setAction(auditTrail.getAction()).setResourceName(auditTrail.getResourceName())
                 .setResourceId(auditTrail.getResourceId()).setPreviousValues(auditTrail.getPreviousValues())
-                .setUpdatedValues(auditTrail.getUpdatedValues()).setDescription(auditTrail.getDescription());
+                .setUpdatedValues(auditTrail.getUpdatedValues());
 
         return response;
     }
@@ -34,7 +34,7 @@ public class AuditTrailMapper {
     }
 
     public IAuditTrailV3 mapToV3(AuditTrail auditTrail) {
-        return new IAuditTrailV3().setUser(userMapper.mapToV3(auditTrail.getUser()))
-                .setId(auditTrail.getId()).setDescription(auditTrail.getDescription());
+        return new IAuditTrailV3()
+                .setUser(userMapper.mapToV3(auditTrail.getUser())).setId(auditTrail.getId());
     }
 }

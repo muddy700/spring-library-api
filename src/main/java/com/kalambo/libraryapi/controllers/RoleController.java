@@ -103,7 +103,7 @@ public class RoleController {
     }
 
     private final ISuccess successResponse(String action, UUID resourceId) {
-        return GlobalUtil.formatResponse("Role", action, resourceId);
+        return globalUtil.formatResponse("Role", action, resourceId);
     }
 
     private void logRequest(String httpMethod, String endpoint) {

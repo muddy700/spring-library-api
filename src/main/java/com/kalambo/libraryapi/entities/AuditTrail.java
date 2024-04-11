@@ -2,6 +2,8 @@ package com.kalambo.libraryapi.entities;
 
 import com.kalambo.libraryapi.entities.abstracts.CreationEntity;
 
+import java.util.UUID;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
@@ -35,13 +37,12 @@ public class AuditTrail extends CreationEntity {
     @Column(length = 25, nullable = false)
     private String resourceName;
 
-    @Column(length = 50)
-    private String resourceId;
+    private UUID resourceId;
 
-    @Column(nullable = false)
-    private String description;
-
+    @Column(columnDefinition = "TEXT")
     private String previousValues;
+
+    @Column(columnDefinition = "TEXT")
     private String updatedValues;
 
     // Relationships

@@ -1,5 +1,7 @@
 package com.kalambo.libraryapi.services;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -44,6 +46,11 @@ public class AuthServiceImpl implements AuthService {
             throw new AccessDeniedException("Request not authenticated");
 
         return (User) auth.getPrincipal();
+    }
+
+    @Override
+    public UUID getPrincipalId() {
+        return getPrincipal().getId();
     }
 
     @Override
