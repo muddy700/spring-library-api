@@ -23,6 +23,7 @@ import com.kalambo.libraryapi.repositories.UserRepository;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IUser;
 import com.kalambo.libraryapi.responses.IUserV2;
+import com.kalambo.libraryapi.utilities.GlobalUtil;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -44,6 +45,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private GlobalUtil globalUtil;
+
     private String generatedPassword;
 
     @Override
@@ -54,6 +58,7 @@ public class UserServiceImpl implements UserService {
                 .setRole(getRoleInfo(userDto.getRoleId())).setPassword(generatePassword());
 
         User createdUser = userRepository.save(payload);
+        trackRequest("create", createdUser, userDto.toString());
         publisher.publishEvent(new UserCreatedEvent(createdUser.setPassword(generatedPassword)));
 
         return createdUser.getId();
@@ -76,12 +81,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(UpdateUserDto payload) {
+        User userInfoBeforeUpdate = getEntity(payload.getId());
+        
         userRepository.save(copyNonNullValues(payload));
+        trackRequest("update", userInfoBeforeUpdate, payload.toString());
     }
 
     @Override
     public void delete(UUID userId) {
-        userRepository.delete(getEntity(userId));
+        User targetUser = getEntity(userId);
+
+        userRepository.delete(targetUser);
+        trackRequest("delete", targetUser, null);
     }
 
     @Override
@@ -143,5 +154,9 @@ public class UserServiceImpl implements UserService {
         generatedPassword = new Faker().regexify("[a-z1-9A-Z]{8}");
 
         return passwordEncoder.encode(generatedPassword);
+    }
+
+    private void trackRequest(String action, User user, String requestDto) {
+        globalUtil.trackRequest(action, "User", user.getId(), user.toString(), requestDto);
     }
 }

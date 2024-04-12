@@ -30,14 +30,14 @@ public class BookReviewServiceImpl implements BookReviewService {
     private BookReviewMapper bookReviewMapper;
 
     @Autowired
-    private UserService userService;
+    private AuthService authService;
 
     @Autowired
     private ApplicationEventPublisher publisher;
 
     @Override
     public void create(BookReviewDto payload, Book book) {
-        User user = userService.getEntity(payload.getUserId());
+        User user = authService.getPrincipal();
 
         checkDuplication(user, book);
         BookReview entity = payload.toEntity().setBook(book).setUser(user);

@@ -38,6 +38,9 @@ public class RoleServiceImpl implements RoleService {
     @Autowired
     private PermissionRepository permissionRepository;
 
+    @Autowired
+    private GlobalUtil globalUtil;
+
     @Override
     public UUID create(RoleDto roleDto) {
         checkDuplication(roleDto.getName());
@@ -46,7 +49,10 @@ public class RoleServiceImpl implements RoleService {
         if (!roleDto.getPermissionsIds().isEmpty())
             rolePayload.addPermissions(permissionRepository.findAllById(roleDto.getPermissionsIds()));
 
-        return roleRepository.save(rolePayload).getId();
+        Role createdRole = roleRepository.save(rolePayload);
+        trackRequest("create", createdRole, roleDto.toString());
+
+        return createdRole.getId();
     }
 
     @Override
@@ -68,7 +74,10 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void update(UpdateRoleDto role) {
+        Role roleInfoBeforeUpdate = getEntity(role.getId());
+
         roleRepository.save(copyNonNullValues(role));
+        trackRequest("update", roleInfoBeforeUpdate, role.toString());
     }
 
     @Override
@@ -85,11 +94,15 @@ public class RoleServiceImpl implements RoleService {
             role.addPermissions(permissionRepository.findAllById(payload.getAddedPermissionsIds()));
 
         roleRepository.save(role);
+        trackRequest("update", role, payload.toString());
     }
 
     @Override
     public void delete(UUID roleId) {
-        roleRepository.delete(getEntity(roleId));
+        Role targetRole = getEntity(roleId);
+        roleRepository.delete(targetRole);
+
+        trackRequest("delete", targetRole, null);
     }
 
     private void checkDuplication(String name) {
@@ -129,5 +142,9 @@ public class RoleServiceImpl implements RoleService {
 
     private String capitalize(RoleEnum enumValue) {
         return GlobalUtil.capitalizeFirstLetter(enumValue.name());
+    }
+
+    private void trackRequest(String action, Role role, String requestDto) {
+        globalUtil.trackRequest(action, "Role", role.getId(), role.toString(), requestDto);
     }
 }
