@@ -15,6 +15,8 @@ import com.kalambo.libraryapi.responses.IUserV2;
 public interface UserService {
     UUID create(UserDto userDto);
 
+    UUID create(UserDto userDto, Boolean hasAuth);
+
     IPage<IUserV2> getAll(Pageable pageable);
 
     IUser getById(UUID userId);

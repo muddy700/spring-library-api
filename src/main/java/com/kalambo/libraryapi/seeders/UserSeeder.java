@@ -54,7 +54,7 @@ public class UserSeeder {
         if (userRepository.findByEmail(payload.getEmail()).isPresent())
             log.info("Users seeding skipped, no new user(s) to add.");
         else {
-            userService.create(payload);
+            userService.create(payload, false);
             log.info("Users seeding completed, System Admin added.");
         }
     }

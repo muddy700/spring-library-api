@@ -52,13 +52,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UUID create(UserDto userDto) {
+        return create(userDto, true);
+    }
+
+    @Override
+    public UUID create(UserDto userDto, Boolean hasAuth) {
         checkDuplication(userDto.getEmail());
 
         User payload = userDto.toEntity()
                 .setRole(getRoleInfo(userDto.getRoleId())).setPassword(generatePassword());
 
         User createdUser = userRepository.save(payload);
-        trackRequest("create", createdUser, userDto.toString());
+
+        if (hasAuth)
+            trackRequest("create", createdUser, userDto.toString());
+
         publisher.publishEvent(new UserCreatedEvent(createdUser.setPassword(generatedPassword)));
 
         return createdUser.getId();
@@ -82,7 +90,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void update(UpdateUserDto payload) {
         User userInfoBeforeUpdate = getEntity(payload.getId());
-        
+
         userRepository.save(copyNonNullValues(payload));
         trackRequest("update", userInfoBeforeUpdate, payload.toString());
     }

@@ -14,7 +14,6 @@ import com.kalambo.libraryapi.entities.Role;
 import com.kalambo.libraryapi.enums.RoleEnum;
 import com.kalambo.libraryapi.repositories.PermissionRepository;
 import com.kalambo.libraryapi.repositories.RoleRepository;
-import com.kalambo.libraryapi.services.RoleService;
 import com.kalambo.libraryapi.utilities.GlobalUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class RoleSeeder {
-    @Autowired
-    private RoleService roleService;
-
     @Autowired
     private RoleRepository roleRepository;
 
@@ -80,7 +76,7 @@ public class RoleSeeder {
         if (optionalRole.isPresent())
             return optionalRole.get();
         else
-            return roleService.getEntity(roleService.create(payload));
+            return roleRepository.save(payload.toEntity());
     }
 
     private void attachPermissions(Role role) {
