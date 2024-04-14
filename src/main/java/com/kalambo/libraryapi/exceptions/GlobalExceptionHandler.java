@@ -44,6 +44,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return formatError(ex, request, "Resource not found");
     }
 
+    @ExceptionHandler(InvalidOldPasswordException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public final IError handleInvalidOldPasswordException(InvalidOldPasswordException ex, WebRequest request) {
+        return formatError(ex, request, "Invalid old password");
+    }
+
     @ExceptionHandler(UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public final IError handleUsernameNotFoundException(UsernameNotFoundException ex, WebRequest request) {

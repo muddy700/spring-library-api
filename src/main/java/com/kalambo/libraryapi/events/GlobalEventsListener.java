@@ -6,17 +6,13 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.kalambo.libraryapi.entities.Task;
 import com.kalambo.libraryapi.notifications.MailNotifier;
 import com.kalambo.libraryapi.notifications.SmsNotifier;
 import com.kalambo.libraryapi.seeders.DatabaseSeeder;
 
-import lombok.extern.slf4j.Slf4j;
-
 /*
  * Centralized events listener for the whole project.
  */
-@Slf4j
 @Component
 public class GlobalEventsListener {
     @Autowired
@@ -26,7 +22,7 @@ public class GlobalEventsListener {
     private SmsNotifier smsNotifier;
 
     @Autowired
-    private MailNotifier emailNotifier;
+    private MailNotifier mailNotifier;
 
     @EventListener
     public void onContextRefreshed(ContextRefreshedEvent event) {
@@ -36,19 +32,24 @@ public class GlobalEventsListener {
     @Async
     @EventListener
     public void onTaskCreation(TaskCreatedEvent event) {
-        // smsNotifier.onTaskCreation(event.getPayload());
-        // emailNotifier.onTaskCreation(event.getPayload());
+        // mailNotifier.onTaskCreation(event.getPayload());
     }
 
     @Async
     @EventListener
     public void onUserCreation(UserCreatedEvent event) {
-        emailNotifier.onUserCreation(event.getPayload());
+        mailNotifier.onUserCreation(event.getPayload());
     }
 
     @Async
     @EventListener
     public void onBookCreation(BookCreatedEvent event) {
-        emailNotifier.onBookCreation(event.getPayload());
+        mailNotifier.onBookCreation(event.getPayload());
+    }
+
+    @Async
+    @EventListener
+    public void onPasswordChange(PasswordChangedEvent event) {
+        mailNotifier.onPasswordChange(event.getPayload());
     }
 }

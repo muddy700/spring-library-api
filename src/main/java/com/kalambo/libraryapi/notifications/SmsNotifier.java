@@ -10,7 +10,7 @@ import com.kalambo.libraryapi.services.SmsService;
 @Service
 public class SmsNotifier {
     @Autowired
-    SmsService smsService;
+    private SmsService smsService;
 
     public void onTaskCreation(Task task) {
         String[] numbers = { "255717963697", "255788387525", "255718793810" };
