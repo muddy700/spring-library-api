@@ -1,13 +1,16 @@
 package com.kalambo.libraryapi.notifications;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.MailDto;
 import com.kalambo.libraryapi.entities.Book;
 import com.kalambo.libraryapi.entities.Task;
 import com.kalambo.libraryapi.entities.User;
+import com.kalambo.libraryapi.enums.TokenTypeEnum;
 import com.kalambo.libraryapi.repositories.UserRepository;
+import com.kalambo.libraryapi.services.AuthTokenService;
 import com.kalambo.libraryapi.services.MailService;
 
 @Service
@@ -17,6 +20,12 @@ public class MailNotifier {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AuthTokenService authTokenService;
+
+    @Value("${app.web.base-url}")
+    private String webAppBaseUrl;
 
     public void onTaskCreation(Task task) {
         String message = "Hello " + task.getAuthorName() + "!,\n \n";
@@ -28,11 +37,17 @@ public class MailNotifier {
     }
 
     public void onUserCreation(User user) {
-        String message = "Hello " + user.getFullName() + "!, welcome to Library MVP App.\n \n";
-        message += "Use the link below to verify your email and login with username: " + user.getEmail();
-        message += " and password: " + user.getPassword() + "\n \n Link: https://localhost:4200/login";
+        // final String link = webAppBaseUrl + "/account/verify-email?token=" +
+        // getVerificationToken(user);
+        final String verificationUrl = webAppBaseUrl + "/api/v1/auth/verify-email?token=" + getVerificationToken(user);
 
-        MailDto mailPayload = new MailDto().setSubject("Account Creation Notification").setBody(message);
+        String message = "Hello " + user.getFullName() + "!, welcome to Library MVP App.<br> <br>";
+        message += "Click the link below to verify your email and create your password.<br> <br>";
+        message += "<b>NB:</b> Your username is: " + user.getEmail();
+        message += "<h3><a href=\"$_VAR_LINK\" target=\"_blank\">VERIFY</a></h3>";
+
+        MailDto mailPayload = new MailDto().setSubject("Account Creation Notification")
+                .setBody(message.replace("$_VAR_LINK", verificationUrl));
 
         mailService.send(mailPayload.addRecipient(user.getEmail()));
     }
@@ -56,13 +71,18 @@ public class MailNotifier {
     }
 
     public void onPasswordChange(User user) {
-        String message = "Hello " + user.getFullName() + ",\n \n";
-        message += "This is to inform you that, the password for your account in Library MVP App has been changed.\n";
-        message += "If you did not authorize this action, then please reset your password by clicking the link below.\n \n";
-        message += "Link: https://localhost:4200/auth/reset-password?token=b116f8d1-582f-4059-9cb0-5e7a44ba24da";
+        final String passwordResetUrl = webAppBaseUrl + "/api/v1/auth/reset-password?token=b116f8d1-582f";
+
+        String message = "Hello " + user.getFullName() + ",<br> <br>";
+        message += "This is to inform you that, the password for your account in Library MVP App has been changed.<br>";
+        message += "If you did not authorize this action, then please reset your password ASAP by clicking the link below.";
+        message += "<h3><a href=" + passwordResetUrl + " target=\"_blank\">RESET</a></h3>";
 
         MailDto mailPayload = new MailDto().setSubject("Account Password Changed").setBody(message);
-
         mailService.send(mailPayload.addRecipient(user.getEmail()));
+    }
+
+    private final String getVerificationToken(User user) {
+        return authTokenService.create(user, TokenTypeEnum.EMAIL_VERIFICATION).getToken();
     }
 }

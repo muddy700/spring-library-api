@@ -65,9 +65,6 @@ public class User extends BaseEntity implements UserDetails {
     private String gender;
 
     @Column(nullable = false)
-    private Boolean firstTimeLogin = Boolean.TRUE;
-
-    @Column(nullable = false)
     private Boolean enabled = Boolean.TRUE;
 
     // Relationships

@@ -2,6 +2,7 @@ package com.kalambo.libraryapi.dtos;
 
 import java.util.UUID;
 
+import com.kalambo.libraryapi.entities.Role;
 import com.kalambo.libraryapi.entities.User;
 
 import jakarta.validation.constraints.Email;
@@ -38,8 +39,8 @@ public class UserDto {
     @Size(min = 1, max = 1)
     private String gender;
 
-    public User toEntity() {
-        return new User()
+    public User toEntity(Role role, String password) {
+        return new User().setRole(role).setPassword(password)
                 .setFullName(fullName).setGender(gender).setEmail(email).setPhoneNumber(phoneNumber);
     }
 }

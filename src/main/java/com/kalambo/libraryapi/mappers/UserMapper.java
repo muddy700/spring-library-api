@@ -18,8 +18,8 @@ public class UserMapper {
                 .setId(user.getId()).setRole(roleMapper.map(user.getRole()))
                 .setEmail(user.getEmail()).setPhoneNumber(user.getPhoneNumber())
                 .setPhoneVerifiedAt(user.getPhoneVerifiedAt()).setGender(user.getGender())
-                .setEnabled(user.getEnabled()).setFirstTimeLogin(user.getFirstTimeLogin())
-                .setFullName(user.getFullName()).setEmailVerifiedAt(user.getEmailVerifiedAt())
+                .setEnabled(user.getEnabled()).setFullName(user.getFullName())
+                .setEmailVerifiedAt(user.getEmailVerifiedAt())
                 .setCreatedAt(user.getCreatedAt()).setUpdatedAt(user.getUpdatedAt()).setDeletedAt(user.getDeletedAt());
 
         return response;

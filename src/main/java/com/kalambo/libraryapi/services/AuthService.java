@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.kalambo.libraryapi.dtos.ChangePasswordDto;
 import com.kalambo.libraryapi.dtos.LoginDto;
 import com.kalambo.libraryapi.entities.User;
+import com.kalambo.libraryapi.responses.IEmailVerification;
 import com.kalambo.libraryapi.responses.ILogin;
 
 public interface AuthService {
@@ -17,4 +18,6 @@ public interface AuthService {
     UUID getPrincipalId();
 
     String getPrincipalUsername();
+
+    IEmailVerification verifyEmail(String verificationToken);
 }

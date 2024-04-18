@@ -48,8 +48,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private GlobalUtil globalUtil;
 
-    private String generatedPassword;
-
     @Override
     public UUID create(UserDto userDto) {
         return create(userDto, true);
@@ -58,17 +56,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public UUID create(UserDto userDto, Boolean hasAuth) {
         checkDuplication(userDto.getEmail());
-
-        User payload = userDto.toEntity()
-                .setRole(getRoleInfo(userDto.getRoleId())).setPassword(generatePassword());
-
-        User createdUser = userRepository.save(payload);
+        User createdUser = userRepository.save(userDto.toEntity(getRoleInfo(userDto.getRoleId()), generatePassword()));
 
         if (hasAuth)
             trackRequest("create", createdUser, userDto.toString());
 
-        publisher.publishEvent(new UserCreatedEvent(createdUser.setPassword(generatedPassword)));
-
+        publisher.publishEvent(new UserCreatedEvent(createdUser));
         return createdUser.getId();
     }
 
@@ -104,14 +97,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getEntity(UUID userId) {
+    public User getEntity(UUID userId) throws ResourceNotFoundException {
         String errorMessage = "No user found with ID: " + userId;
 
         return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(errorMessage));
     }
 
     @Override
-    public User getEntity(String email) {
+    public User getEntity(String email) throws ResourceNotFoundException {
         String errorMessage = "No user found with email: " + email;
 
         return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException(errorMessage));
@@ -159,9 +152,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private final String generatePassword() {
-        generatedPassword = new Faker().regexify("[a-z1-9A-Z]{8}");
-
-        return passwordEncoder.encode(generatedPassword);
+        return passwordEncoder.encode(new Faker().regexify("[a-z1-9A-Z]{8}"));
     }
 
     private void trackRequest(String action, User user, String requestDto) {

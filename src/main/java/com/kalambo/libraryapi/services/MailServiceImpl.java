@@ -3,13 +3,14 @@ package com.kalambo.libraryapi.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.MailDto;
 import com.kalambo.libraryapi.exceptions.ExternalAPIException;
 
+import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -21,11 +22,14 @@ public class MailServiceImpl implements MailService {
     @Override
     public void send(MailDto mailDto) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper msgHelper = new MimeMessageHelper(message);
+            final String emailSignature = "<br> <br> Kind Regards,<br> The Brungas Team.";
 
-            message.setSubject(mailDto.getSubject());
-            message.setText(mailDto.getBody());
-            message.setTo(mailDto.getRecipients().toArray(new String[0]));
+            msgHelper.setSubject(mailDto.getSubject());
+            msgHelper.setTo(mailDto.getRecipients().toArray(new String[0]));
+            msgHelper.setText(mailDto.getBody() + emailSignature, true);
+            msgHelper.setFrom("info.brungas@gmail.com", "Brungas Inc");
 
             mailSender.send(message);
             logSuccessMessage(mailDto);

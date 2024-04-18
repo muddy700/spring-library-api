@@ -50,6 +50,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return formatError(ex, request, "Invalid old password");
     }
 
+    @ExceptionHandler(AuthTokenException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public final IError handleAuthTokenException(AuthTokenException ex, WebRequest request) {
+        return formatError(ex, request, "Auth token error");
+    }
+
     @ExceptionHandler(UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public final IError handleUsernameNotFoundException(UsernameNotFoundException ex, WebRequest request) {

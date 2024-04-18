@@ -13,11 +13,11 @@ public class SmsNotifier {
     private SmsService smsService;
 
     public void onTaskCreation(Task task) {
-        String[] numbers = { "255717963697", "255788387525", "255718793810" };
+        String[] numbers = { "255717963697" };
         String message = "Hellow " + task.getAuthorName() + ", we're testing.";
 
         SmsDto smsDto = new SmsDto().setMessage(message)
-                .setSource_addr("INFO").setEncoding(0);
+                .setSource_addr("Brungas Inc").setEncoding(0);
 
         for (int i = 0; i < numbers.length; i++) {
             smsDto.addRecipient((i + 1), numbers[i]);

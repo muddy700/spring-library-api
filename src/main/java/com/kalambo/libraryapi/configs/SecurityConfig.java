@@ -55,7 +55,7 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         String[] publicEndpoints = { "/", "/swagger", "/swagger-ui/**", "/v3/api-docs/**", "/api/v1/auth/login",
-                "/api/v1/tasks" };
+                "/api/v1/tasks", "/api/v1/auth/verify-email" };
 
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(requests -> requests

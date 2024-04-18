@@ -22,7 +22,6 @@ public class IUser {
 
     private String gender;
     private Boolean enabled;
-    private Boolean firstTimeLogin;
 
     private Date createdAt;
     private Date updatedAt;
