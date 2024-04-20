@@ -16,6 +16,12 @@ public class MailDto {
     private String body;
     private List<String> recipients = new ArrayList<String>();
 
+    public MailDto(String email, String mailSubject, String message) {
+        addRecipient(email);
+        body = message;
+        subject = mailSubject;
+    }
+
     public MailDto addRecipient(String email) {
         recipients.add(email);
         return this;

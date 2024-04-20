@@ -6,6 +6,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.kalambo.libraryapi.entities.User;
+import com.kalambo.libraryapi.enums.CommunicationChannelEnum;
 import com.kalambo.libraryapi.notifications.MailNotifier;
 import com.kalambo.libraryapi.notifications.SmsNotifier;
 import com.kalambo.libraryapi.seeders.DatabaseSeeder;
@@ -51,5 +53,16 @@ public class GlobalEventsListener {
     @EventListener
     public void onPasswordChange(PasswordChangedEvent event) {
         mailNotifier.onPasswordChange(event.getPayload());
+    }
+
+    @Async
+    @EventListener
+    public void onForgotPassword(ForgotPasswordEvent event) {
+        User user = event.getPayload();
+
+        if (event.getChannel() == CommunicationChannelEnum.SMS && user.getPhoneVerifiedAt() != null)
+            smsNotifier.onForgotPassword(user);
+        else
+            mailNotifier.onForgotPassword(user);
     }
 }

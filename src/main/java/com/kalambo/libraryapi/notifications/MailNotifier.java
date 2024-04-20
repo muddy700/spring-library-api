@@ -37,19 +37,24 @@ public class MailNotifier {
     }
 
     public void onUserCreation(User user) {
-        // final String link = webAppBaseUrl + "/account/verify-email?token=" +
-        // getVerificationToken(user);
         final String verificationUrl = webAppBaseUrl + "/api/v1/auth/verify-email?token=" + getVerificationToken(user);
 
         String message = "Hello " + user.getFullName() + "!, welcome to Library MVP App.<br> <br>";
         message += "Click the link below to verify your email and create your password.<br> <br>";
         message += "<b>NB:</b> Your username is: " + user.getEmail();
-        message += "<h3><a href=\"$_VAR_LINK\" target=\"_blank\">VERIFY</a></h3>";
+        message += "<h3><a href=" + verificationUrl + " target=\"_blank\">VERIFY</a></h3>";
 
-        MailDto mailPayload = new MailDto().setSubject("Account Creation Notification")
-                .setBody(message.replace("$_VAR_LINK", verificationUrl));
+        mailService.send(new MailDto(user.getEmail(), "Account Creation Notification", message));
+    }
 
-        mailService.send(mailPayload.addRecipient(user.getEmail()));
+    public void onForgotPassword(User user) {
+        final String passwordResetUrl = webAppBaseUrl + "/auth/reset-password?token=" + getPasswordResetToken(user);
+
+        String message = "Hello " + user.getFullName()
+                + ", click the link below to reset your password in Library MVP App.";
+        message += "<h3><a href=" + passwordResetUrl + " target=\"_blank\">RESET</a></h3>";
+
+        mailService.send(new MailDto(user.getEmail(), "Reset Password Link", message));
     }
 
     public void onBookCreation(Book book) {
@@ -64,9 +69,7 @@ public class MailNotifier {
             message += "Registration Number: " + book.getRegistrationNumber() + "\n \n";
             message += "Link: https://localhost:4200/books/b116f8d1-582f-4059-9cb0-5e7a44ba24da";
 
-            MailDto mailPayload = new MailDto().setSubject(subject).setBody(message).addRecipient(user.getEmail());
-
-            mailService.send(mailPayload);
+            mailService.send(new MailDto(user.getEmail(), subject, message));
         }
     }
 
@@ -78,11 +81,16 @@ public class MailNotifier {
         message += "If you did not authorize this action, then please reset your password ASAP by clicking the link below.";
         message += "<h3><a href=" + passwordResetUrl + " target=\"_blank\">RESET</a></h3>";
 
-        MailDto mailPayload = new MailDto().setSubject("Account Password Changed").setBody(message);
-        mailService.send(mailPayload.addRecipient(user.getEmail()));
+        mailService.send(new MailDto(user.getEmail(), "Account Password Changed", message));
     }
 
     private final String getVerificationToken(User user) {
         return authTokenService.create(user, TokenTypeEnum.EMAIL_VERIFICATION).getToken();
     }
+
+    private final String getPasswordResetToken(User user) {
+        return authTokenService.create(user, TokenTypeEnum.PASSWORD_RESET).getToken();
+    }
 }
+
+// message.replace("$_VAR_LINK", verificationUrl)

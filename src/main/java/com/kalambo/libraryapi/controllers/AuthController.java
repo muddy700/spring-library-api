@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kalambo.libraryapi.dtos.ChangePasswordDto;
+import com.kalambo.libraryapi.dtos.ForgotPasswordDto;
 import com.kalambo.libraryapi.dtos.LoginDto;
-import com.kalambo.libraryapi.responses.IEmailVerification;
+import com.kalambo.libraryapi.responses.ITokenVerification;
+import com.kalambo.libraryapi.responses.IForgotPassword;
 import com.kalambo.libraryapi.responses.ILogin;
 import com.kalambo.libraryapi.responses.ISuccess;
 import com.kalambo.libraryapi.services.AuthService;
@@ -34,10 +36,18 @@ public class AuthController {
 
     @GetMapping("/verify-email")
     @Operation(summary = "Verify account email.", description = "Some description.")
-    public IEmailVerification verifyEmail(@RequestParam String token) {
+    public ITokenVerification verifyEmail(@RequestParam String token) {
         logRequest("GET", "/verify-email", null);
 
         return authService.verifyEmail(token);
+    }
+
+    @GetMapping("/verify-password-reset-token")
+    @Operation(summary = "Verify token for password reset.", description = "Some description.")
+    public ITokenVerification verifyPasswordResetToken(@RequestParam String token) {
+        logRequest("GET", "/verify-password-reset-token", null);
+
+        return authService.verifyPasswordResetToken(token);
     }
 
     @PostMapping("/login")
@@ -46,6 +56,14 @@ public class AuthController {
         logRequest("POST", "/login", loginPayload.getEmail());
 
         return authService.authenticate(loginPayload);
+    }
+
+    @PostMapping("/forgot-password")
+    @Operation(summary = "Forgot password.", description = "Some description.")
+    public IForgotPassword forgotPassword(@RequestBody @Valid ForgotPasswordDto payload) {
+        logRequest("POST", "/forgot-password", null);
+
+        return authService.forgotPassword(payload);
     }
 
     @PostMapping("/change-password")

@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UUID create(UserDto userDto, Boolean hasAuth) {
         checkDuplication(userDto.getEmail());
-        User createdUser = userRepository.save(userDto.toEntity(getRoleInfo(userDto.getRoleId()), generatePassword()));
+        User createdUser = save(userDto.toEntity(getRoleInfo(userDto.getRoleId()), generatePassword()));
 
         if (hasAuth)
             trackRequest("create", createdUser, userDto.toString());
@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
     public void update(UpdateUserDto payload) {
         User userInfoBeforeUpdate = getEntity(payload.getId());
 
-        userRepository.save(copyNonNullValues(payload));
+        save(copyNonNullValues(payload));
         trackRequest("update", userInfoBeforeUpdate, payload.toString());
     }
 
@@ -157,5 +157,15 @@ public class UserServiceImpl implements UserService {
 
     private void trackRequest(String action, User user, String requestDto) {
         globalUtil.trackRequest(action, "User", user.getId(), user.toString(), requestDto);
+    }
+
+    @Override
+    public User save(User entity) {
+        return userRepository.save(entity);
+    }
+
+    @Override
+    public void updatePassword(User user, String password) {
+        save(user.setPassword(passwordEncoder.encode(password)));
     }
 }

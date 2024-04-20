@@ -30,4 +30,8 @@ public interface UserService {
     User getEntity(UUID userId);
 
     User getEntity(String email);
+
+    User save(User entity);
+
+    void updatePassword(User user, String password);
 }

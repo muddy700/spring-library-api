@@ -8,10 +8,15 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @Accessors(chain = true)
 
-public class IEmailVerification {
+public class ITokenVerification {
     private String message;
     private String email;
 
     private String token;
     private long expiresIn;
+
+    public ITokenVerification(String msg, String authToken) {
+        message = msg;
+        token = authToken;
+    }
 }

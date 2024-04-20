@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.SmsDto;
 import com.kalambo.libraryapi.entities.Task;
+import com.kalambo.libraryapi.entities.User;
 import com.kalambo.libraryapi.services.SmsService;
 
 @Service
@@ -24,5 +25,9 @@ public class SmsNotifier {
         }
 
         smsService.send(smsDto);
+    }
+
+    public void onForgotPassword(User user) {
+        // TODO: Send password reset code here
     }
 }

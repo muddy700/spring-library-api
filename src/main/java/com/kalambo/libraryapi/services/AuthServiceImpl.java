@@ -15,14 +15,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.ChangePasswordDto;
+import com.kalambo.libraryapi.dtos.ForgotPasswordDto;
 import com.kalambo.libraryapi.dtos.LoginDto;
 import com.kalambo.libraryapi.entities.AuthToken;
 import com.kalambo.libraryapi.entities.User;
+import com.kalambo.libraryapi.enums.CommunicationChannelEnum;
+import com.kalambo.libraryapi.events.ForgotPasswordEvent;
 import com.kalambo.libraryapi.events.PasswordChangedEvent;
 import com.kalambo.libraryapi.exceptions.InvalidOldPasswordException;
 import com.kalambo.libraryapi.mappers.UserMapper;
-import com.kalambo.libraryapi.repositories.UserRepository;
-import com.kalambo.libraryapi.responses.IEmailVerification;
+import com.kalambo.libraryapi.responses.ITokenVerification;
+import com.kalambo.libraryapi.responses.IForgotPassword;
 import com.kalambo.libraryapi.responses.ILogin;
 
 @Service
@@ -43,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private AuthTokenService authTokenService;
@@ -80,21 +83,31 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public IEmailVerification verifyEmail(String verificationToken) {
-        AuthToken tokenInfo = authTokenService.isActive(verificationToken);
+    public ITokenVerification verifyEmail(String verificationToken) {
+        return processToken(verificationToken, true);
+    }
+
+    @Override
+    public ITokenVerification verifyPasswordResetToken(String verificationToken) {
+        return processToken(verificationToken, false);
+    }
+
+    private ITokenVerification processToken(String token, Boolean isEmailVerification) {
+        AuthToken tokenInfo = authTokenService.isActive(token);
         User user = tokenInfo.getUser();
 
         // Update user info
-        user.setPassword(passwordEncoder.encode(verificationToken));
-        userRepository.save(user.setEmailVerifiedAt(new Date()));
+        if (isEmailVerification)
+            user.setEmailVerifiedAt(new Date());
+        userService.updatePassword(user, token);
 
         // Delete token
         authTokenService.delete(tokenInfo);
 
-        String message = "Email verified successfully.";
-        String authToken = jwtService.generateToken(user.getUsername());
+        String message = isEmailVerification ? "Email" : "Token";
+        message += " verified successfully.";
 
-        return new IEmailVerification().setMessage(message).setToken(authToken)
+        return new ITokenVerification(message, jwtService.generateToken(user.getUsername()))
                 .setEmail(user.getEmail()).setExpiresIn(jwtService.getExpirationTime());
     }
 
@@ -105,7 +118,27 @@ public class AuthServiceImpl implements AuthService {
         if (!passwordEncoder.matches(payload.getOldPassword(), user.getPassword()))
             throw new InvalidOldPasswordException("Invalid old password");
 
-        userRepository.save(user.setPassword(passwordEncoder.encode(payload.getNewPassword())));
+        userService.updatePassword(user, payload.getNewPassword());
         publisher.publishEvent(new PasswordChangedEvent(user));
+    }
+
+    @Override
+    public IForgotPassword forgotPassword(ForgotPasswordDto payload) {
+        User user = userService.getEntity(payload.getEmail());
+        publisher.publishEvent(new ForgotPasswordEvent(user, payload.getChannel()));
+
+        String message = "";
+        CommunicationChannelEnum channelUsed = null;
+
+        if (payload.getChannel() == CommunicationChannelEnum.SMS && user.getPhoneVerifiedAt() != null) {
+            channelUsed = CommunicationChannelEnum.SMS;
+            message = "Password reset code sent to your phone number ending with: "
+                    + user.getPhoneNumber().substring(user.getPhoneNumber().length() - 2);
+        } else {
+            channelUsed = CommunicationChannelEnum.EMAIL;
+            message = "Password reset link sent successfully, kindly check your email to proceed";
+        }
+
+        return new IForgotPassword(message, channelUsed);
     }
 }
