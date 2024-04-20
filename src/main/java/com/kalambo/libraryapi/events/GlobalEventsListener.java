@@ -6,8 +6,10 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.kalambo.libraryapi.entities.AuthToken;
 import com.kalambo.libraryapi.entities.User;
 import com.kalambo.libraryapi.enums.CommunicationChannelEnum;
+import com.kalambo.libraryapi.enums.TokenTypeEnum;
 import com.kalambo.libraryapi.notifications.MailNotifier;
 import com.kalambo.libraryapi.notifications.SmsNotifier;
 import com.kalambo.libraryapi.seeders.DatabaseSeeder;
@@ -64,5 +66,17 @@ public class GlobalEventsListener {
             smsNotifier.onForgotPassword(user);
         else
             mailNotifier.onForgotPassword(user);
+    }
+
+    @Async
+    @EventListener
+    public void onTokenRecreatedEvent(TokenRecreatedEvent event) {
+        AuthToken token = event.getPayload();
+
+        if (token.getType() == TokenTypeEnum.EMAIL_VERIFICATION)
+            mailNotifier.onUserCreation(token.getUser(), token.getToken());
+
+        else if (token.getType() == TokenTypeEnum.PASSWORD_RESET)
+            mailNotifier.onForgotPassword(token.getUser(), token.getToken());
     }
 }

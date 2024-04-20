@@ -56,7 +56,7 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         final String[] publicEndpoints = { "/", "/swagger", "/swagger-ui/**", "/v3/api-docs/**", "/api/v1/auth/login",
                 "/api/v1/tasks", "/api/v1/auth/verify-email", "/api/v1/auth/forgot-password",
-                "/api/v1/auth/verify-password-reset-token" };
+                "/api/v1/auth/verify-password-reset-token", "/api/v1/auth/resend-token" };
 
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(requests -> requests

@@ -37,7 +37,11 @@ public class MailNotifier {
     }
 
     public void onUserCreation(User user) {
-        final String verificationUrl = webAppBaseUrl + "/api/v1/auth/verify-email?token=" + getVerificationToken(user);
+        onUserCreation(user, getVerificationToken(user));
+    }
+
+    public void onUserCreation(User user, String token) {
+        final String verificationUrl = webAppBaseUrl + "/api/v1/auth/verify-email?token=" + token;
 
         String message = "Hello " + user.getFullName() + "!, welcome to Library MVP App.<br> <br>";
         message += "Click the link below to verify your email and create your password.<br> <br>";
@@ -48,7 +52,11 @@ public class MailNotifier {
     }
 
     public void onForgotPassword(User user) {
-        final String passwordResetUrl = webAppBaseUrl + "/auth/reset-password?token=" + getPasswordResetToken(user);
+        onForgotPassword(user, getPasswordResetToken(user));
+    }
+
+    public void onForgotPassword(User user, String token) {
+        final String passwordResetUrl = webAppBaseUrl + "/auth/reset-password?token=" + token;
 
         String message = "Hello " + user.getFullName()
                 + ", click the link below to reset your password in Library MVP App.";

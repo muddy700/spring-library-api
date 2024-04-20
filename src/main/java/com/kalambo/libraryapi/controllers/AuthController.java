@@ -50,6 +50,14 @@ public class AuthController {
         return authService.verifyPasswordResetToken(token);
     }
 
+    @GetMapping("/resend-token")
+    @Operation(summary = "Resend verification token.", description = "Some description.")
+    public ISuccess resendVerificationToken(@RequestParam String token) {
+        logRequest("GET", "/resend-token", null);
+
+        return authService.resendVerificationToken(token);
+    }
+
     @PostMapping("/login")
     @Operation(summary = "Authenticate user.", description = "Some description.")
     public ILogin authenticate(@RequestBody @Valid LoginDto loginPayload) {

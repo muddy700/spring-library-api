@@ -9,6 +9,7 @@ import com.kalambo.libraryapi.entities.User;
 import com.kalambo.libraryapi.responses.ITokenVerification;
 import com.kalambo.libraryapi.responses.IForgotPassword;
 import com.kalambo.libraryapi.responses.ILogin;
+import com.kalambo.libraryapi.responses.ISuccess;
 
 public interface AuthService {
     ILogin authenticate(LoginDto payload);
@@ -26,4 +27,6 @@ public interface AuthService {
     ITokenVerification verifyEmail(String verificationToken);
 
     ITokenVerification verifyPasswordResetToken(String verificationToken);
+
+    ISuccess resendVerificationToken(String currentToken);
 }
