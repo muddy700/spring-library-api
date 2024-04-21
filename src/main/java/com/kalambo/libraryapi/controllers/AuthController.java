@@ -50,6 +50,15 @@ public class AuthController {
         return authService.verifyOtp(code);
     }
 
+    @GetMapping("/verify-phone")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Verify phone  number.", description = "Some description.")
+    public ISuccess verifyPhoneNumber() {
+        logRequest("GET", "/verify-phone", authService.getPrincipalUsername());
+
+        return authService.verifyPhoneNumber();
+    }
+
     @GetMapping("/resend-token")
     @Operation(summary = "Resend verification token.", description = "Some description.")
     public ISuccess resendVerificationToken(@RequestParam String token) {

@@ -29,4 +29,6 @@ public interface AuthService {
     ITokenVerification verifyOtp(Integer verificationCode);
 
     ISuccess resendVerificationToken(String currentToken);
+
+    ISuccess verifyPhoneNumber();
 }

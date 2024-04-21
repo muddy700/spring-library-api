@@ -25,6 +25,7 @@ import com.kalambo.libraryapi.enums.CommunicationChannelEnum;
 import com.kalambo.libraryapi.enums.OtpTypeEnum;
 import com.kalambo.libraryapi.enums.TokenTypeEnum;
 import com.kalambo.libraryapi.events.ForgotPasswordEvent;
+import com.kalambo.libraryapi.events.OtpCreatedEvent;
 import com.kalambo.libraryapi.events.PasswordChangedEvent;
 import com.kalambo.libraryapi.events.TokenRecreatedEvent;
 import com.kalambo.libraryapi.exceptions.InvalidOldPasswordException;
@@ -196,5 +197,18 @@ public class AuthServiceImpl implements AuthService {
     private final ITokenVerification verificationResult(User user, String message) {
         return new ITokenVerification(message, jwtService.generateToken(user.getUsername()))
                 .setEmail(user.getEmail()).setExpiresIn(jwtService.getExpirationTime());
+    }
+
+    @Override
+    public ISuccess verifyPhoneNumber() {
+        User user = getPrincipal();
+
+        Otp otp = otpService.create(user, OtpTypeEnum.PHONE_VERIFICATION);
+        publisher.publishEvent(new OtpCreatedEvent(otp));
+
+        final String message = "Verification code sent to your phone number ending with: "
+                + user.getPhoneNumber().substring(user.getPhoneNumber().length() - 2);
+
+        return new ISuccess(message, otp.getId());
     }
 }

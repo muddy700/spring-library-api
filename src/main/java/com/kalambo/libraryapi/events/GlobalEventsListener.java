@@ -70,6 +70,12 @@ public class GlobalEventsListener {
 
     @Async
     @EventListener
+    public void onOtpCreation(OtpCreatedEvent event) {
+        smsNotifier.onOtpCreation(event.getPayload());
+    }
+
+    @Async
+    @EventListener
     public void onTokenRecreatedEvent(TokenRecreatedEvent event) {
         AuthToken token = event.getPayload();
 

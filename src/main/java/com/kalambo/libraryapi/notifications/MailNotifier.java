@@ -82,12 +82,9 @@ public class MailNotifier {
     }
 
     public void onPasswordChange(User user) {
-        final String passwordResetUrl = webAppBaseUrl + "/api/v1/auth/reset-password?token=b116f8d1-582f";
-
         String message = "Hello " + user.getFullName() + ",<br> <br>";
         message += "This is to inform you that, the password for your account in Library MVP App has been changed.<br>";
-        message += "If you did not authorize this action, then please reset your password ASAP by clicking the link below.";
-        message += "<h3><a href=" + passwordResetUrl + " target=\"_blank\">RESET</a></h3>";
+        message += "If you did not authorize this action, then please contact your admin ASAP.";
 
         mailService.send(new MailDto(user.getEmail(), "Account Password Changed", message));
     }
