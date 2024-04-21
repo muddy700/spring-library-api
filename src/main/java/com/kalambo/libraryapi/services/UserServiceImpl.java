@@ -120,8 +120,10 @@ public class UserServiceImpl implements UserService {
             userInfo.setEmail(payload.getEmail());
         }
 
-        if (payload.getPhoneNumber() != null)
+        if (payload.getPhoneNumber() != null && payload.getPhoneNumber() != userInfo.getPhoneNumber()) {
             userInfo.setPhoneNumber(payload.getPhoneNumber());
+            userInfo.setPhoneVerifiedAt(null);
+        }
 
         if (payload.getFullName() != null)
             userInfo.setFullName(payload.getFullName());

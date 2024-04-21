@@ -30,5 +30,7 @@ public interface AuthService {
 
     ISuccess resendVerificationToken(String currentToken);
 
+    ISuccess resendOtp(Integer currentCode);
+
     ISuccess verifyPhoneNumber();
 }

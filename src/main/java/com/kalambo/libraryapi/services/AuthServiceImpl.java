@@ -203,6 +203,9 @@ public class AuthServiceImpl implements AuthService {
     public ISuccess verifyPhoneNumber() {
         User user = getPrincipal();
 
+        if (user.getPhoneVerifiedAt() != null)
+            throw new AccessDeniedException("Phone number already verified");
+
         Otp otp = otpService.create(user, OtpTypeEnum.PHONE_VERIFICATION);
         publisher.publishEvent(new OtpCreatedEvent(otp));
 
@@ -210,5 +213,25 @@ public class AuthServiceImpl implements AuthService {
                 + user.getPhoneNumber().substring(user.getPhoneNumber().length() - 2);
 
         return new ISuccess(message, otp.getId());
+    }
+
+    @Override
+    public ISuccess resendOtp(Integer currentCode) {
+        Otp newOtp = otpService.reCreate(currentCode);
+        User user = newOtp.getUser();
+
+        String message = "Unknown code";
+        publisher.publishEvent(new OtpCreatedEvent(newOtp));
+
+        if (newOtp.getType() == OtpTypeEnum.PHONE_VERIFICATION)
+            message = "Verification";
+
+        else if (newOtp.getType() == OtpTypeEnum.PASSWORD_RESET)
+            message = "Password reset";
+
+        message += " code sent to your phone number ending with: "
+                + user.getPhoneNumber().substring(user.getPhoneNumber().length() - 2);
+
+        return new ISuccess(message, newOtp.getId());
     }
 }

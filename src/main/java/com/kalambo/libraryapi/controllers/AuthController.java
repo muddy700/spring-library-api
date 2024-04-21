@@ -67,6 +67,14 @@ public class AuthController {
         return authService.resendVerificationToken(token);
     }
 
+    @GetMapping("/resend-otp")
+    @Operation(summary = "Resend otp.", description = "Some description.")
+    public ISuccess resendOtp(@RequestParam Integer code) {
+        logRequest("GET", "/resend-otp", null);
+
+        return authService.resendOtp(code);
+    }
+
     @PostMapping("/login")
     @Operation(summary = "Authenticate user.", description = "Some description.")
     public ILogin authenticate(@RequestBody @Valid LoginDto loginPayload) {

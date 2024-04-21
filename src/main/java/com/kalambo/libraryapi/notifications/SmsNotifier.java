@@ -34,6 +34,9 @@ public class SmsNotifier {
         if (otp.getType() == OtpTypeEnum.PHONE_VERIFICATION)
             message = otp.getCode() + " is your phone number verification code for Library MVP App.";
 
+        else if (otp.getType() == OtpTypeEnum.PASSWORD_RESET)
+            message = otp.getCode() + " is your password reset code for Library MVP App.";
+
         smsService.send(new SmsDto(otp.getUser().getPhoneNumber(), message));
     }
 
