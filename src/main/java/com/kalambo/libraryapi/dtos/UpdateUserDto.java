@@ -1,6 +1,9 @@
 package com.kalambo.libraryapi.dtos;
 
 import java.util.UUID;
+
+import com.kalambo.libraryapi.enums.GenderEnum;
+
 import java.util.Arrays;
 import java.lang.reflect.Field;
 
@@ -27,8 +30,7 @@ public class UpdateUserDto {
   @Size(min = 10, max = 50)
   private String fullName;
 
-  @Size(min = 1, max = 1)
-  private String gender;
+  private GenderEnum gender;
 
   private UUID roleId;
   private Boolean enabled;

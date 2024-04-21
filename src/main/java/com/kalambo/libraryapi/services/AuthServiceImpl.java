@@ -1,6 +1,7 @@
 package com.kalambo.libraryapi.services;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,10 @@ import com.kalambo.libraryapi.dtos.ChangePasswordDto;
 import com.kalambo.libraryapi.dtos.ForgotPasswordDto;
 import com.kalambo.libraryapi.dtos.LoginDto;
 import com.kalambo.libraryapi.entities.AuthToken;
+import com.kalambo.libraryapi.entities.Otp;
 import com.kalambo.libraryapi.entities.User;
 import com.kalambo.libraryapi.enums.CommunicationChannelEnum;
+import com.kalambo.libraryapi.enums.OtpTypeEnum;
 import com.kalambo.libraryapi.enums.TokenTypeEnum;
 import com.kalambo.libraryapi.events.ForgotPasswordEvent;
 import com.kalambo.libraryapi.events.PasswordChangedEvent;
@@ -54,6 +57,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private AuthTokenService authTokenService;
 
+    @Autowired
+    private OtpService otpService;
+
     public ILogin authenticate(LoginDto payload) {
         Authentication auth = authManager
                 .authenticate(new UsernamePasswordAuthenticationToken(payload.getEmail(), payload.getPassword()));
@@ -86,32 +92,24 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ITokenVerification verifyEmail(String verificationToken) {
-        return processToken(verificationToken, true);
-    }
+    public ITokenVerification verifyAuthToken(String verificationToken) {
+        AuthToken tokenInfo = authTokenService.isActive(verificationToken);
 
-    @Override
-    public ITokenVerification verifyPasswordResetToken(String verificationToken) {
-        return processToken(verificationToken, false);
-    }
-
-    private ITokenVerification processToken(String token, Boolean isEmailVerification) {
-        AuthToken tokenInfo = authTokenService.isActive(token);
+        String message = "Token";
         User user = tokenInfo.getUser();
 
-        // Update user info
-        if (isEmailVerification)
+        if (tokenInfo.getType() == TokenTypeEnum.EMAIL_VERIFICATION) {
+            message = "Email";
             user.setEmailVerifiedAt(new Date());
-        userService.updatePassword(user, token);
+        }
 
-        // Delete token
+        if (List.of(TokenTypeEnum.EMAIL_VERIFICATION, TokenTypeEnum.PASSWORD_RESET).contains(tokenInfo.getType()))
+            userService.updatePassword(user, verificationToken);
+
         authTokenService.delete(tokenInfo);
-
-        String message = isEmailVerification ? "Email" : "Token";
         message += " verified successfully.";
 
-        return new ITokenVerification(message, jwtService.generateToken(user.getUsername()))
-                .setEmail(user.getEmail()).setExpiresIn(jwtService.getExpirationTime());
+        return verificationResult(user, message);
     }
 
     @Override
@@ -172,5 +170,31 @@ public class AuthServiceImpl implements AuthService {
 
         if (user.getEmailVerifiedAt() == null)
             throw new AccessDeniedException(message);
+    }
+
+    @Override
+    public ITokenVerification verifyOtp(Integer verificationCode) {
+        Otp otpInfo = otpService.isActive(verificationCode);
+
+        String message = "Code";
+        User user = otpInfo.getUser();
+
+        if (otpInfo.getType() == OtpTypeEnum.PHONE_VERIFICATION) {
+            message = "Phone number";
+            user.setPhoneVerifiedAt(new Date());
+        }
+
+        else if (otpInfo.getType() == OtpTypeEnum.PASSWORD_RESET)
+            userService.updatePassword(user, "" + verificationCode);
+
+        otpService.delete(otpInfo);
+        message += " verified successfully.";
+
+        return verificationResult(user, message);
+    }
+
+    private final ITokenVerification verificationResult(User user, String message) {
+        return new ITokenVerification(message, jwtService.generateToken(user.getUsername()))
+                .setEmail(user.getEmail()).setExpiresIn(jwtService.getExpirationTime());
     }
 }

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.kalambo.libraryapi.entities.Role;
 import com.kalambo.libraryapi.entities.User;
+import com.kalambo.libraryapi.enums.GenderEnum;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -35,9 +36,8 @@ public class UserDto {
     @Size(min = 10, max = 50)
     private String fullName;
 
-    @NotBlank(message = "Gender is required")
-    @Size(min = 1, max = 1)
-    private String gender;
+    @NotNull(message = "Gender is required")
+    private GenderEnum gender;
 
     public User toEntity(Role role, String password) {
         return new User().setRole(role).setPassword(password)

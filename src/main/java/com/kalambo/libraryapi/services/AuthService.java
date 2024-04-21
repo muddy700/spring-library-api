@@ -24,9 +24,9 @@ public interface AuthService {
 
     IForgotPassword forgotPassword(ForgotPasswordDto payload);
 
-    ITokenVerification verifyEmail(String verificationToken);
+    ITokenVerification verifyAuthToken(String verificationToken);
 
-    ITokenVerification verifyPasswordResetToken(String verificationToken);
+    ITokenVerification verifyOtp(Integer verificationCode);
 
     ISuccess resendVerificationToken(String currentToken);
 }

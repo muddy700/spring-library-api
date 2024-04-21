@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.kalambo.libraryapi.dtos.UserDto;
 import com.kalambo.libraryapi.entities.Role;
+import com.kalambo.libraryapi.enums.GenderEnum;
 import com.kalambo.libraryapi.enums.RoleEnum;
 import com.kalambo.libraryapi.repositories.RoleRepository;
 import com.kalambo.libraryapi.repositories.UserRepository;
@@ -47,7 +48,7 @@ public class UserSeeder {
     private UserDto buildUserDto(UUID roleId) {
         // Details for the System Admin.
         return new UserDto().setEmail("mohamedmfaume700@gmail.com").setRoleId(roleId)
-                .setFullName("Mohamed Mfaume Mohamed").setPhoneNumber("255717963697").setGender("M");
+                .setFullName("Mohamed Mfaume Mohamed").setPhoneNumber("255717963697").setGender(GenderEnum.M);
     }
 
     private void saveUser(UserDto payload) {

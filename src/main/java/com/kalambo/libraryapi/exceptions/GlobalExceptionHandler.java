@@ -56,6 +56,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return formatError(ex, request, "Auth token error");
     }
 
+    @ExceptionHandler(OtpException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public final IError handleOtpException(OtpException ex, WebRequest request) {
+        return formatError(ex, request, "Otp error");
+    }
+
     @ExceptionHandler(UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public final IError handleUsernameNotFoundException(UsernameNotFoundException ex, WebRequest request) {

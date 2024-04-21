@@ -3,6 +3,8 @@ package com.kalambo.libraryapi.responses;
 import java.util.Date;
 import java.util.UUID;
 
+import com.kalambo.libraryapi.enums.GenderEnum;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -20,7 +22,7 @@ public class IUser {
     private Date emailVerifiedAt;
     private Date phoneVerifiedAt;
 
-    private String gender;
+    private GenderEnum gender;
     private Boolean enabled;
 
     private Date createdAt;

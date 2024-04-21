@@ -14,7 +14,8 @@ import com.kalambo.libraryapi.repositories.AuthTokenRepository;
 
 @Service
 public class AuthTokenServiceImpl implements AuthTokenService {
-    private final long expirationTime = 12 * 60 * 60 * 1000;
+    // Token is active only for 3 hours
+    private final long expirationTime = 3 * 60 * 60 * 1000;
 
     @Autowired
     private AuthTokenRepository authTokenRepository;

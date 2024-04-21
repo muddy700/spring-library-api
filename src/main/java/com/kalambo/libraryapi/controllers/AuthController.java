@@ -34,20 +34,20 @@ public class AuthController {
     @Autowired
     private GlobalUtil globalUtil;
 
-    @GetMapping("/verify-email")
-    @Operation(summary = "Verify account email.", description = "Some description.")
-    public ITokenVerification verifyEmail(@RequestParam String token) {
-        logRequest("GET", "/verify-email", null);
+    @GetMapping("/verify-token")
+    @Operation(summary = "Verify auth token.", description = "Some description.")
+    public ITokenVerification verifyAuthToken(@RequestParam String token) {
+        logRequest("GET", "/verify-token", null);
 
-        return authService.verifyEmail(token);
+        return authService.verifyAuthToken(token);
     }
 
-    @GetMapping("/verify-password-reset-token")
-    @Operation(summary = "Verify token for password reset.", description = "Some description.")
-    public ITokenVerification verifyPasswordResetToken(@RequestParam String token) {
-        logRequest("GET", "/verify-password-reset-token", null);
+    @GetMapping("/verify-otp")
+    @Operation(summary = "Verify otp.", description = "Some description.")
+    public ITokenVerification verifyOtp(@RequestParam Integer code) {
+        logRequest("GET", "/verify-otp", null);
 
-        return authService.verifyPasswordResetToken(token);
+        return authService.verifyOtp(code);
     }
 
     @GetMapping("/resend-token")

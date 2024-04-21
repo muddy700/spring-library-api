@@ -12,9 +12,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.kalambo.libraryapi.entities.abstracts.BaseEntity;
+import com.kalambo.libraryapi.enums.GenderEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -49,9 +52,6 @@ public class User extends BaseEntity implements UserDetails {
     @Column(length = 12, unique = true, nullable = false)
     private String phoneNumber;
 
-    private Integer phoneVerificationToken;
-    private Date verificationTokenExpiresAt;
-
     @Column(nullable = false)
     private String password;
 
@@ -61,8 +61,9 @@ public class User extends BaseEntity implements UserDetails {
     @Column(length = 50, unique = true, nullable = false)
     private String fullName;
 
-    @Column(length = 1, nullable = false)
-    private String gender;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private GenderEnum gender;
 
     @Column(nullable = false)
     private Boolean enabled = Boolean.TRUE;
