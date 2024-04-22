@@ -108,9 +108,7 @@ public class AuthServiceImpl implements AuthService {
             userService.updatePassword(user, verificationToken);
 
         authTokenService.delete(tokenInfo);
-        message += " verified successfully.";
-
-        return verificationResult(user, message);
+        return verificationResult(user, message + " verified successfully.");
     }
 
     @Override
@@ -133,16 +131,15 @@ public class AuthServiceImpl implements AuthService {
 
         publisher.publishEvent(new ForgotPasswordEvent(user, payload.getChannel()));
 
-        String message = "";
+        String message = null;
         CommunicationChannelEnum channelUsed = null;
 
         if (payload.getChannel() == CommunicationChannelEnum.SMS && user.getPhoneVerifiedAt() != null) {
             channelUsed = CommunicationChannelEnum.SMS;
-            message = "Password reset code sent to your phone number ending with: "
-                    + user.getPhoneNumber().substring(user.getPhoneNumber().length() - 2);
+            message = getSuccessMessageForOtp(user, OtpTypeEnum.PASSWORD_RESET);
         } else {
             channelUsed = CommunicationChannelEnum.EMAIL;
-            message = "Password reset link sent successfully, kindly check your email to proceed";
+            message = getSuccessMessageForEmail(TokenTypeEnum.PASSWORD_RESET);
         }
 
         return new IForgotPassword(message, channelUsed);
@@ -151,19 +148,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ISuccess resendVerificationToken(String currentToken) {
         AuthToken newToken = authTokenService.reCreate(currentToken);
-
-        String message = "Unknown token";
         publisher.publishEvent(new TokenRecreatedEvent(newToken));
 
-        if (newToken.getType() == TokenTypeEnum.EMAIL_VERIFICATION)
-            message = "Email verification";
-
-        else if (newToken.getType() == TokenTypeEnum.PASSWORD_RESET)
-            message = "Password reset";
-
-        message += " link sent successfully, kindly check your email to proceed";
-
-        return new ISuccess(message, newToken.getId());
+        return new ISuccess(getSuccessMessageForEmail(newToken.getType()), newToken.getId());
     }
 
     private void checkEmailVerificationStatus(User user) throws AccessDeniedException {
@@ -189,9 +176,7 @@ public class AuthServiceImpl implements AuthService {
             userService.updatePassword(user, "" + verificationCode);
 
         otpService.delete(otpInfo);
-        message += " verified successfully.";
-
-        return verificationResult(user, message);
+        return verificationResult(user, message + " verified successfully.");
     }
 
     private final ITokenVerification verificationResult(User user, String message) {
@@ -209,29 +194,27 @@ public class AuthServiceImpl implements AuthService {
         Otp otp = otpService.create(user, OtpTypeEnum.PHONE_VERIFICATION);
         publisher.publishEvent(new OtpCreatedEvent(otp));
 
-        final String message = "Verification code sent to your phone number ending with: "
-                + user.getPhoneNumber().substring(user.getPhoneNumber().length() - 2);
-
-        return new ISuccess(message, otp.getId());
+        return new ISuccess(getSuccessMessageForOtp(user, otp.getType()), otp.getId());
     }
 
     @Override
     public ISuccess resendOtp(Integer currentCode) {
         Otp newOtp = otpService.reCreate(currentCode);
-        User user = newOtp.getUser();
-
-        String message = "Unknown code";
         publisher.publishEvent(new OtpCreatedEvent(newOtp));
 
-        if (newOtp.getType() == OtpTypeEnum.PHONE_VERIFICATION)
-            message = "Verification";
+        return new ISuccess(getSuccessMessageForOtp(newOtp.getUser(), newOtp.getType()), newOtp.getId());
+    }
 
-        else if (newOtp.getType() == OtpTypeEnum.PASSWORD_RESET)
-            message = "Password reset";
+    private final String getSuccessMessageForOtp(User user, OtpTypeEnum otpType) {
+        final String initial = (otpType == OtpTypeEnum.PASSWORD_RESET) ? "Password reset" : "Verification";
 
-        message += " code sent to your phone number ending with: "
+        return initial + " code sent to your phone number ending with: "
                 + user.getPhoneNumber().substring(user.getPhoneNumber().length() - 2);
+    }
 
-        return new ISuccess(message, newOtp.getId());
+    private final String getSuccessMessageForEmail(TokenTypeEnum tokenType) {
+        final String initial = (tokenType == TokenTypeEnum.PASSWORD_RESET) ? "Password reset" : "Verification";
+
+        return initial + " link sent successfully, kindly check your email to proceed";
     }
 }
