@@ -19,25 +19,25 @@ public class SmsNotifier {
     private OtpService otpService;
 
     public void onForgotPassword(User user) {
-        onForgotPassword(user, getPasswordResetCode(user));
-    }
-
-    public void onForgotPassword(User user, Integer code) {
-        final String message = code + " is your password reset code for Library MVP App.";
-
-        smsService.send(new SmsDto(user.getPhoneNumber(), message));
+        notifyUser(getPasswordResetCode(user), user, OtpTypeEnum.PASSWORD_RESET);
     }
 
     public void onOtpCreation(Otp otp) {
-        String message = null;
+        notifyUser(otp.getCode(), otp.getUser(), otp.getType());
+    }
 
-        if (otp.getType() == OtpTypeEnum.PHONE_VERIFICATION)
-            message = otp.getCode() + " is your phone number verification code for Library MVP App.";
+    private void notifyUser(Integer code, User user, OtpTypeEnum otpType) {
+        String purpose = null;
 
-        else if (otp.getType() == OtpTypeEnum.PASSWORD_RESET)
-            message = otp.getCode() + " is your password reset code for Library MVP App.";
+        if (otpType == OtpTypeEnum.PASSWORD_RESET)
+            purpose = "password reset";
 
-        smsService.send(new SmsDto(otp.getUser().getPhoneNumber(), message));
+        else if (otpType == OtpTypeEnum.PHONE_VERIFICATION)
+            purpose = "phone number verification";
+
+        final String message = code + " is your " + purpose + " code for Library MVP App.";
+
+        smsService.send(new SmsDto(user.getPhoneNumber(), message));
     }
 
     private final Integer getPasswordResetCode(User user) {
