@@ -14,8 +14,8 @@ import com.kalambo.libraryapi.repositories.OtpRepository;
 
 @Service
 public class OtpServiceImpl implements OtpService {
-    // Otp is active only for 10 minutes
-    private final long expirationTime = 10 * 60 * 1000;
+    // Otp is active only for 5 minutes
+    private final long expirationTime = 5 * 60 * 1000;
 
     @Autowired
     private OtpRepository otpRepository;
