@@ -1,5 +1,6 @@
 package com.kalambo.libraryapi.services;
 
+import java.util.Date;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import com.kalambo.libraryapi.dtos.UpdateUserDto;
 import com.kalambo.libraryapi.entities.Role;
 import com.kalambo.libraryapi.entities.User;
 import com.kalambo.libraryapi.events.UserCreatedEvent;
-import com.kalambo.libraryapi.exceptions.ResourceDuplicationException;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
 import com.kalambo.libraryapi.mappers.PageMapper;
 import com.kalambo.libraryapi.mappers.UserMapper;
@@ -55,7 +55,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UUID create(UserDto userDto, Boolean hasAuth) {
-        checkDuplication(userDto.getEmail());
         User createdUser = save(userDto.toEntity(getRoleInfo(userDto.getRoleId()), generatePassword()));
 
         if (hasAuth)
@@ -115,10 +114,8 @@ public class UserServiceImpl implements UserService {
         User userInfo = getEntity(payload.getId());
 
         // Append all updatable fields here.
-        if (payload.getEmail() != null) {
-            checkDuplication(payload.getEmail());
+        if (payload.getEmail() != null)
             userInfo.setEmail(payload.getEmail());
-        }
 
         if (payload.getPhoneNumber() != null && payload.getPhoneNumber() != userInfo.getPhoneNumber()) {
             userInfo.setPhoneNumber(payload.getPhoneNumber());
@@ -140,15 +137,6 @@ public class UserServiceImpl implements UserService {
         return userInfo;
     }
 
-    private void checkDuplication(String email) {
-        String errorMessage = "User with email: " + email + ", already exist";
-
-        // TODO: Check with phoneNumber and fullName also.
-
-        if (userRepository.findByEmail(email).isPresent())
-            throw new ResourceDuplicationException(errorMessage);
-    }
-
     private Role getRoleInfo(UUID roleId) {
         return roleService.getEntity(roleId);
     }
@@ -168,6 +156,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updatePassword(User user, String password) {
-        save(user.setPassword(passwordEncoder.encode(password)));
+        save(user.setPassword(passwordEncoder.encode(password)).setPasswordChangedAt(new Date()));
     }
 }

@@ -1,6 +1,7 @@
 package com.kalambo.libraryapi.services;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,12 +59,14 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public IPage<IBookV2> getAll(Pageable pageable) {
-        return pageMapper.paginate(bookRepository.findAll(pageable));
+        IPage<IBookV2> res = pageMapper.paginate(bookRepository.findAll(pageable));
+
+        return res.setItems(appendReviewsInfo(res.getItems()));
     }
 
     @Override
     public IBook getById(UUID bookId) {
-        return appendRatingsInfo(getEntity(bookId));
+        return appendReviewsInfo(getEntity(bookId));
     }
 
     @Override
@@ -142,21 +145,34 @@ public class BookServiceImpl implements BookService {
         return bookInfo;
     }
 
-    private IBook appendRatingsInfo(Book book) {
-        return appendRatingsInfo(bookMapper.map(book).setReviews(bookReviewService.getByBook(book)));
+    private IBook appendReviewsInfo(Book book) {
+        IBook iBook = bookMapper.map(book).setReviews(bookReviewService.getByBook(book));
+
+        if (!iBook.getReviews().isEmpty())
+            iBook.setRatings(calculateRatings(iBook.getReviews()));
+
+        return iBook;
     }
 
-    private IBook appendRatingsInfo(IBook iBook) {
+    private List<IBookV2> appendReviewsInfo(List<IBookV2> items) {
+        for (IBookV2 iBookV2 : items) {
+            List<IBookReviewV2> bookReviews = bookReviewService.getByBook(getEntity(iBookV2.getId()));
+
+            // Append reviews info
+            iBookV2.setReviewsCount(bookReviews.size()).setRatings(calculateRatings(bookReviews));
+        }
+
+        return items;
+    }
+
+    private final Integer calculateRatings(List<IBookReviewV2> bookReviews) {
         Integer ratings = 0;
 
-        if (iBook.getReviews().isEmpty())
-            return iBook;
-
-        for (IBookReviewV2 review : iBook.getReviews()) {
+        for (IBookReviewV2 review : bookReviews) {
             ratings += review.getRatings();
         }
 
-        return iBook.setRatings(ratings / iBook.getReviews().size());
+        return (ratings / bookReviews.size());
     }
 
     private void trackRequest(String action, Book book, String requestDto) {

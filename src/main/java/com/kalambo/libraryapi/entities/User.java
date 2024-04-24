@@ -36,10 +36,15 @@ import lombok.experimental.Accessors;
 
 @Table(name = "users", indexes = {
         @Index(name = "email_index", columnList = "email", unique = true),
-        @Index(name = "deleted_index", columnList = "deleted_at"),
+        @Index(name = "deleted_index", columnList = "deletedAt"),
         @Index(name = "phone_index", columnList = "phoneNumber", unique = true),
         @Index(name = "name_index", columnList = "fullName", unique = true),
         @Index(name = "role_index", columnList = "role_id"),
+        @Index(name = "password_change_index", columnList = "passwordChangedAt"),
+        @Index(name = "email_verification_index", columnList = "emailVerifiedAt"),
+        @Index(name = "phone_verification_index", columnList = "phoneVerifiedAt"),
+        @Index(name = "email_subscription_index", columnList = "emailSubscription"),
+        @Index(name = "sms_subscription_index", columnList = "smsSubscription"),
 })
 
 @SQLRestriction("deleted_at IS NULL")
@@ -58,12 +63,21 @@ public class User extends BaseEntity implements UserDetails {
     private Date emailVerifiedAt;
     private Date phoneVerifiedAt;
 
+    @Column(nullable = false)
+    private Date passwordChangedAt;
+
     @Column(length = 50, unique = true, nullable = false)
     private String fullName;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private GenderEnum gender;
+
+    @Column(nullable = false)
+    private Boolean emailSubscription = Boolean.FALSE;
+
+    @Column(nullable = false)
+    private Boolean smsSubscription = Boolean.FALSE;
 
     @Column(nullable = false)
     private Boolean enabled = Boolean.TRUE;

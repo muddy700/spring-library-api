@@ -24,9 +24,10 @@ public class IUser {
 
     private GenderEnum gender;
     private Boolean enabled;
+    private IRole role;
+    private Date passwordChangedAt;
 
     private Date createdAt;
     private Date updatedAt;
     private Date deletedAt;
-    private IRole role;
 }

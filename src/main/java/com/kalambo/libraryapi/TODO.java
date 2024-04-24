@@ -1,8 +1,13 @@
+package com.kalambo.libraryapi;
+
 // TODO: All TODOs should be recorded here to avoid repetitions.
 
 /*
- * 1. Use 'private' for all Autowired variables in all classes
- * *
+ * 1. In all repositories, create a reusable function named => findByQuery,
+ * which will pass all querying params as optional and implemented using @Query
+ * or DB Function/Procedure ==> Then remove all other individual findByFunctions
+ * in all repositories, also do it for getAll(pageable) functions
+ * 
  * 3. Add controller and service for generating system reports within a certain
  * date range eg..
  * - Books added/removed
@@ -13,15 +18,10 @@
  * NB: Add comparison with the previous month of the date-range specified if
  * possible
  * 
- * 4. Validate password with pattern ==>
- * https://www.bezkoder.com/spring-boot-validate-request-body/
- * 
- * 6. Add implementations for all applicable events-handlers
- * 
  * 8. Delete all relational data in delete function of all
  * service-implementations
  * 
- * 11. See if there's a need to add index on createdAt field
+ * 11. Add index on createdAt field for some entities iff applicable
  * 
  * 12. Add data flow diagrams ie.. controller -> Service(Dto) ->
  * Controller(IResponse)
@@ -48,5 +48,6 @@
  * 3. One user can only have one role.
  * 4. Only users with Student role can add a review.
  * 5. Students can only update their own profiles.
- * 6.
+ * 6. Accounts for Students are created by staff at the library
+ * 7. Users are required to change their passwords after each 30 days
  */

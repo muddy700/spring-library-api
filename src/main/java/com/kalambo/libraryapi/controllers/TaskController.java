@@ -14,7 +14,6 @@ import com.kalambo.libraryapi.dtos.groups.OnCreate;
 import com.kalambo.libraryapi.dtos.groups.OnUpdate;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.ITask;
-import com.kalambo.libraryapi.services.AuthService;
 import com.kalambo.libraryapi.services.TaskService;
 import com.kalambo.libraryapi.utilities.GlobalUtil;
 

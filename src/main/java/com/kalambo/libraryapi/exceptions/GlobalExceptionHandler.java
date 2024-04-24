@@ -1,6 +1,8 @@
 package com.kalambo.libraryapi.exceptions;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
@@ -27,6 +29,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path.Node;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -36,7 +39,8 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // TODO: Remember to handle the following
     // SQLException, EntityNotFoundException NoSuchElementException,
-    // IllegalArgumentException => for null permission-ids
+    // DtoManipulationException, IllegalArgumentException => for null
+    // permission-ids, Handle built-in exceptions ie.. about:blank
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -44,10 +48,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return formatError(ex, request, "Resource not found");
     }
 
-    @ExceptionHandler(InvalidOldPasswordException.class)
+    @ExceptionHandler(InvalidPasswordException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public final IError handleInvalidOldPasswordException(InvalidOldPasswordException ex, WebRequest request) {
-        return formatError(ex, request, "Invalid old password");
+    public final IError handleInvalidOldPasswordException(InvalidPasswordException ex, WebRequest request) {
+        return formatError(ex, request, "Invalid password");
     }
 
     @ExceptionHandler(AuthTokenException.class)
@@ -128,19 +132,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String description = "Make some changes in the field(s) listed below and try again";
         IError errorInfo = formatError(ex, request, "Constraint violation", description);
 
-        // TODO: Find a better way to extract field-name from the string
-        for (ConstraintViolation violation : ex.getConstraintViolations()) {
-            errorInfo.addValidationError(violation.getPropertyPath().toString(), violation.getMessage());
+        for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
+            errorInfo.addValidationError(getViolationFieldName(violation), violation.getMessage());
         }
 
         return errorInfo;
     }
 
-    // TODO: Review the description returned and modify to hide db info
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public final IError handleDataIntegrityViolation(DataIntegrityViolationException ex, WebRequest request) {
-        return formatError(ex, request, "Data integrity violation");
+        String description = ex.getMostSpecificCause().getMessage().split("for")[0];
+        return formatError(ex, request, "Data integrity violation", description);
     }
 
     @Override
@@ -180,4 +183,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return errorDetails;
     }
 
+    private final String getViolationFieldName(ConstraintViolation<?> violation) {
+        // violation.getPropertyPath() ==> createTask.payload.authorEmail
+
+        List<Node> pathNodes = new ArrayList<Node>();
+        violation.getPropertyPath().forEach(node -> pathNodes.add(node));
+
+        return pathNodes.getLast().getName();
+    }
 }

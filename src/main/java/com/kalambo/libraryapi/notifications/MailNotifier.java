@@ -8,10 +8,12 @@ import com.kalambo.libraryapi.dtos.MailDto;
 import com.kalambo.libraryapi.entities.Book;
 import com.kalambo.libraryapi.entities.Task;
 import com.kalambo.libraryapi.entities.User;
+import com.kalambo.libraryapi.enums.RoleEnum;
 import com.kalambo.libraryapi.enums.TokenTypeEnum;
 import com.kalambo.libraryapi.repositories.UserRepository;
 import com.kalambo.libraryapi.services.AuthTokenService;
 import com.kalambo.libraryapi.services.MailService;
+import com.kalambo.libraryapi.services.RoleService;
 
 @Service
 public class MailNotifier {
@@ -24,11 +26,14 @@ public class MailNotifier {
     @Autowired
     private AuthTokenService authTokenService;
 
+    @Autowired
+    private RoleService roleService;
+
     @Value("${app.web.base-url}")
     private String webAppBaseUrl;
 
     public void onTaskCreation(Task task) {
-        String message = "Hello " + task.getAuthorName() + "!,\n \n";
+        String message = "Hello " + task.getAuthorName() + "!,<br> <br>";
         message += "Your task with title: " + task.getTitle() + ", created successfully.";
 
         MailDto mailPayload = new MailDto().setSubject("Task Creation Notification").setBody(message);
@@ -69,12 +74,12 @@ public class MailNotifier {
         // TODO: Retrieve all users(students) who subscribed for email(emailSubscription
         // = true), and return only fullName and email.
 
-        for (User user : userRepository.findAll()) {
+        for (User user : userRepository.findByRoleAndEmailSubscription(roleService.getEntity(RoleEnum.STUDENT), true)) {
             String message, subject = user.getFullName() + ", we just added a Book you might like";
 
-            message = "Title: " + book.getTitle() + "\n";
-            message += "Author: " + book.getAuthorName() + "\n";
-            message += "Registration Number: " + book.getRegistrationNumber() + "\n \n";
+            message = "Title: " + book.getTitle() + "<br>";
+            message += "Author: " + book.getAuthorName() + "<br>";
+            message += "Registration Number: " + book.getRegistrationNumber() + "<br> <br>";
             message += "Link: https://localhost:4200/books/b116f8d1-582f-4059-9cb0-5e7a44ba24da";
 
             mailService.send(new MailDto(user.getEmail(), subject, message));

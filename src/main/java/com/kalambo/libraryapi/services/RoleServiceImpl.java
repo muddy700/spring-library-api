@@ -66,7 +66,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Role getEntity(UUID roleId) {
+    public Role getEntity(UUID roleId) throws ResourceNotFoundException {
         String errorMessage = "No role found with ID: " + roleId;
 
         return roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException(errorMessage));
@@ -134,9 +134,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     private void preserveDefaultRoles(Role role) {
-        List<String> defaultRoles = List.of(capitalize(RoleEnum.ADMIN), capitalize(RoleEnum.STUDENT));
-
-        if (defaultRoles.contains(role.getName()))
+        if (List.of(capitalize(RoleEnum.ADMIN), capitalize(RoleEnum.STUDENT)).contains(role.getName()))
             throw new AccessDeniedException("The role name 'Admin' and 'Student' cannot be changed.");
     }
 
@@ -146,5 +144,11 @@ public class RoleServiceImpl implements RoleService {
 
     private void trackRequest(String action, Role role, String requestDto) {
         globalUtil.trackRequest(action, "Role", role.getId(), role.toString(), requestDto);
+    }
+
+    @Override
+    public Role getEntity(RoleEnum roleName) throws ResourceNotFoundException {
+        return roleRepository.findByName(capitalize(roleName))
+                .orElseThrow(() -> new ResourceNotFoundException("No role found with name: " + capitalize(roleName)));
     }
 }

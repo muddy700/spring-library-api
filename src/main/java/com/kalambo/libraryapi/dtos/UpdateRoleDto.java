@@ -2,6 +2,9 @@ package com.kalambo.libraryapi.dtos;
 
 import java.lang.reflect.Field;
 import java.util.UUID;
+
+import com.kalambo.libraryapi.exceptions.DtoManipulationException;
+
 import java.util.Arrays;
 
 import lombok.Data;
@@ -29,7 +32,7 @@ public class UpdateRoleDto {
                     result += field.getName() + "=" + field.get(this).toString();
                 }
             } catch (Exception ex) {
-                // TODO: handle exception
+                throw new DtoManipulationException("Failed to stringfy UpdateRoleDto ==> " + ex.getMessage());
             }
         }
 

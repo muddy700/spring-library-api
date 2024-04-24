@@ -19,9 +19,6 @@ public class BookMapper {
         return response;
     }
 
-    // TODO: private Integer ratings;
-    // TODO: private Integer reviewsCount;
-
     public IBookV2 mapToV2(Book book) {
         IBookV2 response = new IBookV2().setId(book.getId())
                 .setEnabled(book.getEnabled()).setCoverImage(book.getCoverImage())

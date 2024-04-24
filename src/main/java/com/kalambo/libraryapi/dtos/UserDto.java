@@ -9,6 +9,7 @@ import com.kalambo.libraryapi.enums.GenderEnum;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,9 +25,8 @@ public class UserDto {
     @Email(message = "Enter a valid email")
     private String email;
 
-    // TODO: Add pattern validator for phone numbers ie.. 255xxxxxxxxx
     @NotBlank(message = "Phone number is required")
-    @Size(min = 12, max = 12)
+    @Pattern(regexp = "^255(\\d{9})$", message = "Phone number must start with 255 and followed by 9 digits")
     private String phoneNumber;
 
     @NotNull(message = "Role ID is required")

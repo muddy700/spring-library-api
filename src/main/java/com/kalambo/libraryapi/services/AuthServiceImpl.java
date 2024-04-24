@@ -28,7 +28,7 @@ import com.kalambo.libraryapi.events.ForgotPasswordEvent;
 import com.kalambo.libraryapi.events.OtpCreatedEvent;
 import com.kalambo.libraryapi.events.PasswordChangedEvent;
 import com.kalambo.libraryapi.events.TokenRecreatedEvent;
-import com.kalambo.libraryapi.exceptions.InvalidOldPasswordException;
+import com.kalambo.libraryapi.exceptions.InvalidPasswordException;
 import com.kalambo.libraryapi.mappers.UserMapper;
 import com.kalambo.libraryapi.responses.ITokenVerification;
 import com.kalambo.libraryapi.responses.IForgotPassword;
@@ -116,7 +116,10 @@ public class AuthServiceImpl implements AuthService {
         User user = getPrincipal();
 
         if (!passwordEncoder.matches(payload.getOldPassword(), user.getPassword()))
-            throw new InvalidOldPasswordException("Invalid old password");
+            throw new InvalidPasswordException("Invalid old password");
+
+        if (passwordEncoder.matches(payload.getNewPassword(), user.getPassword()))
+            throw new InvalidPasswordException("Your old password can not be the new password");
 
         userService.updatePassword(user, payload.getNewPassword());
         publisher.publishEvent(new PasswordChangedEvent(user));

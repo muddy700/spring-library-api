@@ -3,11 +3,13 @@ package com.kalambo.libraryapi.dtos;
 import java.util.UUID;
 
 import com.kalambo.libraryapi.enums.GenderEnum;
+import com.kalambo.libraryapi.exceptions.DtoManipulationException;
 
 import java.util.Arrays;
 import java.lang.reflect.Field;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +26,7 @@ public class UpdateUserDto {
   @Email(message = "Enter a valid email")
   private String email;
 
-  @Size(min = 12, max = 12)
+  @Pattern(regexp = "^255(\\d{9})$", message = "Phone number must start with 255 and followed by 9 digits")
   private String phoneNumber;
 
   @Size(min = 10, max = 50)
@@ -46,7 +48,7 @@ public class UpdateUserDto {
           result += field.getName() + "=" + field.get(this).toString();
         }
       } catch (Exception ex) {
-        // TODO: handle exception
+        throw new DtoManipulationException("Failed to stringfy UpdateUserDto ==> " + ex.getMessage());
       }
     }
 

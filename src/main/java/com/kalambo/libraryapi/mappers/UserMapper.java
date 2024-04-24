@@ -19,7 +19,7 @@ public class UserMapper {
                 .setEmail(user.getEmail()).setPhoneNumber(user.getPhoneNumber())
                 .setPhoneVerifiedAt(user.getPhoneVerifiedAt()).setGender(user.getGender())
                 .setEnabled(user.getEnabled()).setFullName(user.getFullName())
-                .setEmailVerifiedAt(user.getEmailVerifiedAt())
+                .setEmailVerifiedAt(user.getEmailVerifiedAt()).setPasswordChangedAt(user.getPasswordChangedAt())
                 .setCreatedAt(user.getCreatedAt()).setUpdatedAt(user.getUpdatedAt()).setDeletedAt(user.getDeletedAt());
 
         return response;
