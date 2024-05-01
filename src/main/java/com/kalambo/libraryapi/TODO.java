@@ -21,6 +21,8 @@ package com.kalambo.libraryapi;
  * 8. Delete all relational data in delete function of all
  * service-implementations
  * 
+ * 9. Force users to change passwords after expiration time
+ * 
  * 11. Add index on createdAt field for some entities iff applicable
  * 
  * 12. Add data flow diagrams ie.. controller -> Service(Dto) ->

@@ -1,5 +1,6 @@
 package com.kalambo.libraryapi.dtos;
 
+import java.util.Date;
 import java.util.UUID;
 
 import com.kalambo.libraryapi.entities.Role;
@@ -40,7 +41,7 @@ public class UserDto {
     private GenderEnum gender;
 
     public User toEntity(Role role, String password) {
-        return new User().setRole(role).setPassword(password)
+        return new User().setRole(role).setPassword(password).setPasswordChangedAt(new Date())
                 .setFullName(fullName).setGender(gender).setEmail(email).setPhoneNumber(phoneNumber);
     }
 }
