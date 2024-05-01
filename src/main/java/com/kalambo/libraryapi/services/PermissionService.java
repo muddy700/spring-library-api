@@ -4,10 +4,10 @@ import org.springframework.data.domain.Pageable;
 
 import com.kalambo.libraryapi.dtos.PermissionDto;
 import com.kalambo.libraryapi.responses.IPage;
-import com.kalambo.libraryapi.responses.IPermission;
+import com.kalambo.libraryapi.responses.IPermissionV2;
 
 public interface PermissionService {
     void create(PermissionDto permissionDto);
 
-    IPage<IPermission> getAll(Pageable pageable);
+    IPage<IPermissionV2> getAll(Pageable pageable);
 }

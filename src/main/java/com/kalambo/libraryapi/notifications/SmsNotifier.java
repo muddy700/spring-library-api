@@ -4,25 +4,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kalambo.libraryapi.dtos.SmsDto;
-import com.kalambo.libraryapi.entities.Task;
+import com.kalambo.libraryapi.entities.Otp;
+import com.kalambo.libraryapi.entities.User;
+import com.kalambo.libraryapi.enums.OtpTypeEnum;
+import com.kalambo.libraryapi.services.OtpService;
 import com.kalambo.libraryapi.services.SmsService;
 
 @Service
 public class SmsNotifier {
     @Autowired
-    SmsService smsService;
+    private SmsService smsService;
 
-    public void onTaskCreation(Task task) {
-        String[] numbers = { "255717963697", "255788387525", "255718793810" };
-        String message = "Hellow " + task.getAuthorName() + ", we're testing.";
+    @Autowired
+    private OtpService otpService;
 
-        SmsDto smsDto = new SmsDto().setMessage(message)
-                .setSource_addr("INFO").setEncoding(0);
+    public void onForgotPassword(User user) {
+        notifyUser(getPasswordResetCode(user), user, OtpTypeEnum.PASSWORD_RESET);
+    }
 
-        for (int i = 0; i < numbers.length; i++) {
-            smsDto.addRecipient((i + 1), numbers[i]);
-        }
+    public void onOtpCreation(Otp otp) {
+        notifyUser(otp.getCode(), otp.getUser(), otp.getType());
+    }
 
-        smsService.send(smsDto);
+    private void notifyUser(Integer code, User user, OtpTypeEnum otpType) {
+        String purpose = null;
+
+        if (otpType == OtpTypeEnum.PASSWORD_RESET)
+            purpose = "password reset";
+
+        else if (otpType == OtpTypeEnum.PHONE_VERIFICATION)
+            purpose = "phone number verification";
+
+        final String message = code + " is your " + purpose + " code for Library MVP App.";
+
+        smsService.send(new SmsDto(user.getPhoneNumber(), message));
+    }
+
+    private final Integer getPasswordResetCode(User user) {
+        return otpService.create(user, OtpTypeEnum.PASSWORD_RESET).getCode();
     }
 }

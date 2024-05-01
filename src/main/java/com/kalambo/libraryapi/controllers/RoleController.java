@@ -4,9 +4,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,72 +16,97 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kalambo.libraryapi.dtos.RoleDto;
+import com.kalambo.libraryapi.dtos.UpdatePermissionDto;
 import com.kalambo.libraryapi.dtos.UpdateRoleDto;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.IRole;
+import com.kalambo.libraryapi.responses.IRoleV2;
+import com.kalambo.libraryapi.responses.ISuccess;
+import com.kalambo.libraryapi.services.AuthService;
 import com.kalambo.libraryapi.services.RoleService;
+import com.kalambo.libraryapi.utilities.GlobalUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 
-@Tag(name = "Role", description = "Manage user roles.")
-@Slf4j
-@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/v1/roles")
+@Tag(name = "Role", description = "Manage user roles.")
+
 public class RoleController {
     @Autowired
     private RoleService roleService;
 
-    @PostMapping
-    @Operation(summary = "Create a new role.", description = "Some description.")
-    public ResponseEntity<IRole> createRole(@Valid @RequestBody RoleDto payload) {
-        log.info("POST - /api/v1/roles");
-        IRole createdRole = roleService.create(payload);
+    @Autowired
+    private GlobalUtil globalUtil;
 
-        return new ResponseEntity<IRole>(createdRole, HttpStatus.OK);
+    @Autowired
+    private AuthService authService;
+
+    @PostMapping
+    @PreAuthorize("hasAuthority('create_role')")
+    @Operation(summary = "Create a new role.", description = "Some description.")
+    public ISuccess createRole(@Valid @RequestBody RoleDto payload) {
+        logRequest("POST", "");
+
+        return successResponse("create", roleService.create(payload));
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('view_role')")
     @Operation(summary = "Retrieve all roles.", description = "Some description.")
-    public ResponseEntity<IPage<IRole>> getAllRoles(@RequestParam(defaultValue = "0") int page,
+    public IPage<IRoleV2> getAllRoles(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        log.info("GET - /api/v1/roles");
+        logRequest("GET", "");
 
-        return ResponseEntity.ok(roleService.getAll(PageRequest.of(page, size)));
+        return roleService.getAll(PageRequest.of(page, size));
     }
 
     @GetMapping("{id}")
+    @PreAuthorize("hasAuthority('view_role')")
     @Operation(summary = "Retrieve a single role by id.", description = "Some description.")
-    public ResponseEntity<IRole> getRoleById(@PathVariable("id") UUID roleId) {
-        log.info("GET - /api/v1/roles/" + roleId);
-        IRole role = roleService.getById(roleId);
+    public IRole getRoleById(@PathVariable("id") UUID roleId) {
+        logRequest("GET", "/" + roleId);
 
-        return ResponseEntity.ok(role);
+        return roleService.getById(roleId);
     }
 
     @PutMapping("{id}")
+    @PreAuthorize("hasAuthority('update_role')")
     @Operation(summary = "Update role details.", description = "Some description.")
-    public ResponseEntity<IRole> updateRole(@PathVariable("id") UUID roleId,
-            @RequestBody UpdateRoleDto payload) {
-        log.info("PUT - /api/v1/roles/" + roleId);
+    public ISuccess updateRole(@PathVariable("id") UUID roleId, @RequestBody UpdateRoleDto payload) {
+        logRequest("PUT", "/" + roleId);
 
-        payload.setId(roleId);
-        IRole updatedRole = roleService.update(payload);
+        roleService.update(payload.setId(roleId));
+        return successResponse("update", roleId);
+    }
 
-        return ResponseEntity.ok(updatedRole);
+    @PutMapping("{id}/manage-permissions")
+    @PreAuthorize("hasAuthority('manage_permission')")
+    @Operation(summary = "Manage role's permissions.", description = "Some description.")
+    public ISuccess managePermissions(@PathVariable("id") UUID roleId, @RequestBody UpdatePermissionDto payload) {
+        logRequest("PUT", "/" + roleId + "/manage-permissions");
+
+        roleService.managePermissions(payload.setRoleId(roleId));
+        return successResponse("Role's permissions updated", roleId);
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasAuthority('delete_role')")
     @Operation(summary = "Delete a single role by id.", description = "Some description.")
-    public ResponseEntity<String> deleteRoleById(@PathVariable("id") UUID roleId) {
-        log.warn("DELETE - /api/v1/roles/" + roleId);
+    public ISuccess deleteRoleById(@PathVariable("id") UUID roleId) {
+        logRequest("DELETE", "/" + roleId);
 
         roleService.delete(roleId);
-        String message = "Role with ID: " + roleId + ", deleted successful.";
+        return successResponse("delete", roleId);
+    }
 
-        return ResponseEntity.ok(message);
+    private final ISuccess successResponse(String action, UUID resourceId) {
+        return globalUtil.formatResponse("Role", action, resourceId);
+    }
+
+    private void logRequest(String httpMethod, String endpoint) {
+        globalUtil.logRequest(httpMethod, "roles" + endpoint, authService.getPrincipalUsername());
     }
 }

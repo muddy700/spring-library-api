@@ -37,7 +37,7 @@ public class SmsServiceImpl implements SmsService {
 
             log.info("SMS sent successfully.");
         } catch (Exception ex) {
-            log.error("Failed to send SMS" + " :: " + ex.getMessage());
+            log.error("Failed to send SMS :: " + ex.getMessage());
             throw new ExternalAPIException("SMS API ==> " + ex.getMessage());
         }
     }

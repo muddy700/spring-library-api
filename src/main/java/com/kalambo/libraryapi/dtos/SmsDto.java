@@ -2,28 +2,27 @@ package com.kalambo.libraryapi.dtos;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
+
 public class SmsDto {
-    private String source_addr;
-    private Integer encoding;
+    private String source_addr = "Brungas Inc";
+    private Integer encoding = 0;
     private String message;
-    private List<SmsRecipientDto> recipients;
+    private List<SmsRecipientDto> recipients = new ArrayList<SmsRecipientDto>();
 
-    public void addRecipient(Integer recipientId, String destinationAddress) {
-        if (Objects.isNull(recipients)) {
-            recipients = new ArrayList<SmsRecipientDto>();
-        }
+    public SmsDto(String recipient, String msg) {
+        message = msg;
+        addRecipient(recipient);
+    }
 
-        recipients.add(new SmsRecipientDto(recipientId, destinationAddress));
+    public void addRecipient(String destinationAddress) {
+        recipients.add(new SmsRecipientDto(recipients.size() + 1, destinationAddress));
     }
 }

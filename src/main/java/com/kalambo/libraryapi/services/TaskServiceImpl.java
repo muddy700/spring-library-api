@@ -8,12 +8,13 @@ import org.springframework.stereotype.Service;
 import com.kalambo.libraryapi.dtos.TaskDto;
 import com.kalambo.libraryapi.entities.Task;
 import com.kalambo.libraryapi.events.TaskCreatedEvent;
+import com.kalambo.libraryapi.exceptions.ResourceDuplicationException;
 import com.kalambo.libraryapi.exceptions.ResourceNotFoundException;
+import com.kalambo.libraryapi.mappers.PageMapper;
 import com.kalambo.libraryapi.mappers.TaskMapper;
 import com.kalambo.libraryapi.repositories.TaskRepository;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.ITask;
-import com.kalambo.libraryapi.utilities.PageMapper;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -31,6 +32,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ITask create(TaskDto taskDto) {
+        checkDuplication(taskDto.getTitle());
         Task task = taskRepository.save(taskDto.toEntity());
 
         publisher.publishEvent(new TaskCreatedEvent(task));
@@ -44,12 +46,13 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ITask getById(Integer taskId) {
+        return taskMapper.map(getEntity(taskId));
+    }
+
+    @Override
+    public Task getEntity(Integer taskId) {
         String errorMessage = "No task found with ID: " + taskId;
-
-        Task taskInfo = taskRepository.findById(taskId).orElseThrow(
-                () -> new ResourceNotFoundException(errorMessage));
-
-        return taskMapper.map(taskInfo);
+        return taskRepository.findById(taskId).orElseThrow(() -> new ResourceNotFoundException(errorMessage));
     }
 
     @Override
@@ -64,28 +67,30 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ITask update(TaskDto task) {
-        return taskMapper.map(taskRepository.save(updateTaskPayload(task)));
+        return taskMapper.map(taskRepository.save(copyNonNullValues(task)));
     }
 
     @Override
     public void delete(Integer taskId) {
-        // Ensure task is present or throw 404
-        ITask task = getById(taskId);
-
-        // TODO: Delete all relational data here (if any)
-        taskRepository.deleteById(task.getId());
+        taskRepository.delete(getEntity(taskId));
     }
 
-    private Task updateTaskPayload(TaskDto payload) {
-        // Ensure task is present or throw 404
-        getById(payload.getId());
+    private void checkDuplication(String title) {
+        String errorMessage = "Task with title: " + title + ", already exist";
 
+        if (taskRepository.findByTitle(title).isPresent())
+            throw new ResourceDuplicationException(errorMessage);
+    }
+
+    private Task copyNonNullValues(TaskDto payload) {
         // Get existing task info
-        Task taskInfo = taskRepository.findById(payload.getId()).get();
+        Task taskInfo = getEntity(payload.getId());
 
         // Append all updatable fields here.
-        if (payload.getTitle() != null)
+        if (payload.getTitle() != null) {
+            checkDuplication(payload.getTitle());
             taskInfo.setTitle(payload.getTitle());
+        }
 
         if (payload.getMaxDuration() != null)
             taskInfo.setMaxDuration(payload.getMaxDuration());
