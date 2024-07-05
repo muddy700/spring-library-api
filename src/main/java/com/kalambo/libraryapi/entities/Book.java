@@ -29,6 +29,7 @@ import lombok.experimental.Accessors;
         @Index(name = "author_index", columnList = "author_name"),
         @Index(name = "enabled_index", columnList = "enabled"),
         @Index(name = "deleted_index", columnList = "deleted_at"),
+        @Index(name = "title_and_author_index", columnList = "title, author_name", unique = true),
 })
 
 @SQLRestriction("deleted_at IS NULL")

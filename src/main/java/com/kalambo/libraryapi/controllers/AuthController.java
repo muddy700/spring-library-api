@@ -102,7 +102,7 @@ public class AuthController {
     }
 
     private final ISuccess successResponse(String message) {
-        return new ISuccess(message, authService.getPrincipalId());
+        return new ISuccess(message, authService.getPrincipalId().toString());
     }
 
     private void logRequest(String httpMethod, String endpoint, String username) {

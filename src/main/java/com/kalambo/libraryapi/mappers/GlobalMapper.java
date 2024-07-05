@@ -48,7 +48,7 @@ public class GlobalMapper<T1, T2> {
         T2 result = null;
 
         if (entity.getClass().equals(Task.class))
-            result = (T2) taskMapper.map((Task) entity);
+            result = (T2) taskMapper.mapToV2((Task) entity);
 
         else if (entity.getClass().equals(Permission.class))
             result = (T2) permissionMapper.mapToV2((Permission) entity);

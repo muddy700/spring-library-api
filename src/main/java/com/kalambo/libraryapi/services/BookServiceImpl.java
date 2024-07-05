@@ -120,9 +120,6 @@ public class BookServiceImpl implements BookService {
         // Get existing book info
         Book bookInfo = getEntity(payload.getId());
 
-        if (payload.getTitle() != null && payload.getAuthorName() != null)
-            checkDuplication(payload.getTitle(), payload.getAuthorName());
-
         // Append all updatable fields here.
         if (payload.getTitle() != null)
             bookInfo.setTitle(payload.getTitle());
@@ -148,10 +145,7 @@ public class BookServiceImpl implements BookService {
     private IBook appendReviewsInfo(Book book) {
         IBook iBook = bookMapper.map(book).setReviews(bookReviewService.getByBook(book));
 
-        if (!iBook.getReviews().isEmpty())
-            iBook.setRatings(calculateRatings(iBook.getReviews()));
-
-        return iBook;
+        return iBook.setRatings(calculateRatings(iBook.getReviews()));
     }
 
     private List<IBookV2> appendReviewsInfo(List<IBookV2> items) {
@@ -159,7 +153,8 @@ public class BookServiceImpl implements BookService {
             List<IBookReviewV2> bookReviews = bookReviewService.getByBook(getEntity(iBookV2.getId()));
 
             // Append reviews info
-            iBookV2.setReviewsCount(bookReviews.size()).setRatings(calculateRatings(bookReviews));
+            iBookV2.setReviewsCount(bookReviews.size());
+            iBookV2.setRatings(calculateRatings(bookReviews));
         }
 
         return items;
@@ -167,6 +162,9 @@ public class BookServiceImpl implements BookService {
 
     private final Integer calculateRatings(List<IBookReviewV2> bookReviews) {
         Integer ratings = 0;
+
+        if (bookReviews.isEmpty())
+            return null;
 
         for (IBookReviewV2 review : bookReviews) {
             ratings += review.getRatings();

@@ -9,7 +9,7 @@ package com.kalambo.libraryapi;
  * in all repositories, also do it for getAll(pageable) functions
  * 
  * 3. Add controller and service for generating system reports within a certain
- * date range eg..
+ * date range eg.
  * - Books added/removed
  * - Students registered
  * - Students entered in the system and / or only once or repetitive records

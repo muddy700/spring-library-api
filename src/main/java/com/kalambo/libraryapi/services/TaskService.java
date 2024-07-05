@@ -6,11 +6,12 @@ import com.kalambo.libraryapi.dtos.TaskDto;
 import com.kalambo.libraryapi.entities.Task;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.ITask;
+import com.kalambo.libraryapi.responses.ITaskV2;
 
 public interface TaskService {
-    ITask create(TaskDto taskDto);
+    Integer create(TaskDto taskDto);
 
-    IPage<ITask> getAll(Pageable pageable);
+    IPage<ITaskV2> getAll(Pageable pageable);
 
     ITask getById(Integer taskId);
 
@@ -18,7 +19,7 @@ public interface TaskService {
 
     ITask getByTitle(String title);
 
-    ITask update(TaskDto task);
+    void update(TaskDto task);
 
     void delete(Integer taskId);
 }

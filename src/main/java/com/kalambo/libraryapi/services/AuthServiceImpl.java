@@ -153,7 +153,7 @@ public class AuthServiceImpl implements AuthService {
         AuthToken newToken = authTokenService.reCreate(currentToken);
         publisher.publishEvent(new TokenRecreatedEvent(newToken));
 
-        return new ISuccess(getSuccessMessageForEmail(newToken.getType()), newToken.getId());
+        return new ISuccess(getSuccessMessageForEmail(newToken.getType()), newToken.getId().toString());
     }
 
     private void checkEmailVerificationStatus(User user) throws AccessDeniedException {
@@ -197,7 +197,7 @@ public class AuthServiceImpl implements AuthService {
         Otp otp = otpService.create(user, OtpTypeEnum.PHONE_VERIFICATION);
         publisher.publishEvent(new OtpCreatedEvent(otp));
 
-        return new ISuccess(getSuccessMessageForOtp(user, otp.getType()), otp.getId());
+        return new ISuccess(getSuccessMessageForOtp(user, otp.getType()), otp.getId().toString());
     }
 
     @Override
@@ -205,7 +205,7 @@ public class AuthServiceImpl implements AuthService {
         Otp newOtp = otpService.reCreate(currentCode);
         publisher.publishEvent(new OtpCreatedEvent(newOtp));
 
-        return new ISuccess(getSuccessMessageForOtp(newOtp.getUser(), newOtp.getType()), newOtp.getId());
+        return new ISuccess(getSuccessMessageForOtp(newOtp.getUser(), newOtp.getType()), newOtp.getId().toString());
     }
 
     private final String getSuccessMessageForOtp(User user, OtpTypeEnum otpType) {

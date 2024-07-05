@@ -16,6 +16,9 @@ public class IAuditTrailV2 {
     private String action;
     private String resourceName;
 
+    private String actorName;
+    private String actorEmail;
+
     private IUserV3 user;
     private Date createdAt;
 }

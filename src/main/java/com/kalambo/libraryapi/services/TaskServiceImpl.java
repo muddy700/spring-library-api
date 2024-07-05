@@ -15,6 +15,7 @@ import com.kalambo.libraryapi.mappers.TaskMapper;
 import com.kalambo.libraryapi.repositories.TaskRepository;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.ITask;
+import com.kalambo.libraryapi.responses.ITaskV2;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -28,19 +29,19 @@ public class TaskServiceImpl implements TaskService {
     private ApplicationEventPublisher publisher;
 
     @Autowired
-    private PageMapper<Task, ITask> pageMapper;
+    private PageMapper<Task, ITaskV2> pageMapper;
 
     @Override
-    public ITask create(TaskDto taskDto) {
+    public Integer create(TaskDto taskDto) {
         checkDuplication(taskDto.getTitle());
         Task task = taskRepository.save(taskDto.toEntity());
 
-        publisher.publishEvent(new TaskCreatedEvent(task));
-        return taskMapper.map(task);
+        // publisher.publishEvent(new TaskCreatedEvent(task));
+        return task.getId();
     }
 
     @Override
-    public IPage<ITask> getAll(Pageable pageable) {
+    public IPage<ITaskV2> getAll(Pageable pageable) {
         return pageMapper.paginate(taskRepository.findAll(pageable));
     }
 
@@ -66,8 +67,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public ITask update(TaskDto task) {
-        return taskMapper.map(taskRepository.save(copyNonNullValues(task)));
+    public void update(TaskDto task) {
+        taskRepository.save(copyNonNullValues(task));
     }
 
     @Override
@@ -94,6 +95,9 @@ public class TaskServiceImpl implements TaskService {
 
         if (payload.getMaxDuration() != null)
             taskInfo.setMaxDuration(payload.getMaxDuration());
+
+        if (payload.getPublished() != null)
+            taskInfo.setPublished(payload.getPublished());
 
         return taskInfo;
     }
