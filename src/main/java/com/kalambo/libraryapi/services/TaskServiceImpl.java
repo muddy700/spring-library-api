@@ -36,7 +36,7 @@ public class TaskServiceImpl implements TaskService {
         checkDuplication(taskDto.getTitle());
         Task task = taskRepository.save(taskDto.toEntity());
 
-        // publisher.publishEvent(new TaskCreatedEvent(task));
+        publisher.publishEvent(new TaskCreatedEvent(task));
         return task.getId();
     }
 
