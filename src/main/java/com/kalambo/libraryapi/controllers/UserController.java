@@ -99,7 +99,8 @@ public class UserController {
         logRequest("PUT", "/me");
 
         userService.update(new UpdateUserDto().setFullName(payload.getFullName())
-                .setPhoneNumber(payload.getPhoneNumber()).setId(authService.getPrincipalId()));
+                .setPhoneNumber(payload.getPhoneNumber()).setId(authService.getPrincipalId())
+                .setSmsSubscription(payload.getSmsSubscription()).setEmailSubscription(payload.getEmailSubscription()));
 
         return successResponse("update", authService.getPrincipalId());
     }

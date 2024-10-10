@@ -22,6 +22,9 @@ public class UpdateUserProfileDto {
     @Size(min = 10, max = 50)
     private String fullName;
 
+    private Boolean smsSubscription;
+    private Boolean emailSubscription;
+
     @Override
     public String toString() {
         String result = "";

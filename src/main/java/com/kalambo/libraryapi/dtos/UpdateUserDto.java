@@ -37,6 +37,9 @@ public class UpdateUserDto {
   private UUID roleId;
   private Boolean enabled;
 
+  private Boolean smsSubscription;
+  private Boolean emailSubscription;
+
   @Override
   public String toString() {
     String result = "";
