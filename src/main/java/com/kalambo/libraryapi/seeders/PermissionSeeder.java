@@ -100,7 +100,7 @@ public class PermissionSeeder {
         List<PermissionDto> dtos = new ArrayList<PermissionDto>();
 
         dtos.add(new PermissionDto().setAction("manage_permission")
-                .setResourceName("Role").setDescription("Can add and remove  permission(s) to and from the role"));
+                .setResourceName("Role").setDescription("Can manage role  permission(s)."));
 
         return dtos;
     }

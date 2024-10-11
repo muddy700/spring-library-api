@@ -28,7 +28,8 @@ public class AuditTrailMapper {
         IAuditTrailV2 response = new IAuditTrailV2()
                 .setUser(userMapper.mapToV3(auditTrail.getUser()))
                 .setId(auditTrail.getId()).setCreatedAt(auditTrail.getCreatedAt())
-                .setAction(auditTrail.getAction()).setResourceName(auditTrail.getResourceName());
+                .setAction(auditTrail.getAction()).setResourceName(auditTrail.getResourceName())
+                .setActorName(auditTrail.getUser().getFullName()).setActorEmail(auditTrail.getUser().getEmail());
 
         return response;
     }

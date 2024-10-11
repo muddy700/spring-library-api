@@ -29,7 +29,7 @@ public class GlobalUtil {
         else
             message = action + " successfully.";
 
-        return new ISuccess(message, resourceId);
+        return new ISuccess(message, resourceId.toString());
     }
 
     public void logRequest(String httpMethod, String endpoint) {

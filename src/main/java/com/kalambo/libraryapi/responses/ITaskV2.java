@@ -10,15 +10,8 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @Accessors(chain = true)
 
-public class ITask {
+public class ITaskV2 {
     private Integer id;
     private String title;
-
-    private String authorName;
-    private String authorEmail;
-    private Integer maxDuration;
-
     private Date createdAt;
-    private Date updatedAt;
-    private boolean published;
 }

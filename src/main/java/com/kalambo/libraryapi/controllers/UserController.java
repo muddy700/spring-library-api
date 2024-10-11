@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kalambo.libraryapi.dtos.UserDto;
 import com.kalambo.libraryapi.dtos.UpdateUserDto;
+import com.kalambo.libraryapi.dtos.UpdateUserProfileDto;
 import com.kalambo.libraryapi.responses.IPage;
 import com.kalambo.libraryapi.responses.ISuccess;
 import com.kalambo.libraryapi.responses.IUser;
@@ -89,6 +90,19 @@ public class UserController {
 
         userService.update(payload.setId(userId));
         return successResponse("update", userId);
+    }
+
+    @PutMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Update profile info of the authenticated user.", description = "Some description.")
+    public ISuccess updateUserProfile(@Valid @RequestBody UpdateUserProfileDto payload) {
+        logRequest("PUT", "/me");
+
+        userService.update(new UpdateUserDto().setFullName(payload.getFullName())
+                .setPhoneNumber(payload.getPhoneNumber()).setId(authService.getPrincipalId())
+                .setSmsSubscription(payload.getSmsSubscription()).setEmailSubscription(payload.getEmailSubscription()));
+
+        return successResponse("update", authService.getPrincipalId());
     }
 
     @DeleteMapping("{id}")

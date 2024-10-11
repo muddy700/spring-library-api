@@ -13,7 +13,9 @@ import com.kalambo.libraryapi.dtos.TaskDto;
 import com.kalambo.libraryapi.dtos.groups.OnCreate;
 import com.kalambo.libraryapi.dtos.groups.OnUpdate;
 import com.kalambo.libraryapi.responses.IPage;
+import com.kalambo.libraryapi.responses.ISuccess;
 import com.kalambo.libraryapi.responses.ITask;
+import com.kalambo.libraryapi.responses.ITaskV2;
 import com.kalambo.libraryapi.services.TaskService;
 import com.kalambo.libraryapi.utilities.GlobalUtil;
 
@@ -42,15 +44,15 @@ public class TaskController {
     @PostMapping
     @Validated(OnCreate.class)
     @Operation(summary = "Create a new task.", description = "Some description.")
-    public ITask createTask(@Valid @RequestBody TaskDto payload) {
+    public ISuccess createTask(@Valid @RequestBody TaskDto payload) {
         logRequest("POST", "");
 
-        return taskService.create(payload);
+        return successResponse("create", taskService.create(payload));
     }
 
     @GetMapping
     @Operation(summary = "Retrieve all tasks.", description = "Some description.")
-    public IPage<ITask> getAllTasks(@RequestParam(defaultValue = "0") int page,
+    public IPage<ITaskV2> getAllTasks(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         logRequest("GET", "");
 
@@ -68,19 +70,25 @@ public class TaskController {
     @PutMapping("{id}")
     @Validated(OnUpdate.class)
     @Operation(summary = "Update task details.", description = "Some description.")
-    public ITask updateTask(@PathVariable("id") Integer taskId, @Valid @RequestBody TaskDto payload) {
+    public ISuccess updateTask(@PathVariable("id") Integer taskId, @Valid @RequestBody TaskDto payload) {
         logRequest("PUT", "/" + taskId);
 
-        return taskService.update(payload.setId(taskId));
+        taskService.update(payload.setId(taskId));
+        return successResponse("update", taskId);
     }
 
     @DeleteMapping("{id}")
     @Operation(summary = "Delete a single task by id.", description = "Some description.")
-    public String deleteTaskById(@PathVariable("id") Integer taskId) {
+    public ISuccess deleteTaskById(@PathVariable("id") Integer taskId) {
         logRequest("DELETE", "/" + taskId);
 
         taskService.delete(taskId);
-        return "Task with ID: " + taskId + " deleted successful.";
+        return successResponse("delete", taskId);
+    }
+
+    private final ISuccess successResponse(String action, Integer resourceId) {
+        final String message = "Task " + action + "d successfully.";
+        return new ISuccess(message, String.valueOf(resourceId));
     }
 
     private void logRequest(String httpMethod, String endpoint) {

@@ -18,7 +18,7 @@ public class IRole {
     private String description;
 
     private Boolean active;
-    List<IPermissionV3> permissions;
+    List<IPermissionV2> permissions;
 
     private Date createdAt;
     private Date updatedAt;

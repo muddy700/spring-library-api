@@ -131,6 +131,12 @@ public class UserServiceImpl implements UserService {
         if (payload.getEnabled() != null)
             userInfo.setEnabled(payload.getEnabled());
 
+        if (payload.getSmsSubscription() != null)
+            userInfo.setSmsSubscription(payload.getSmsSubscription());
+
+        if (payload.getEmailSubscription() != null)
+            userInfo.setEmailSubscription(payload.getEmailSubscription());
+
         if (payload.getRoleId() != null)
             userInfo.setRole(getRoleInfo(payload.getRoleId()));
 

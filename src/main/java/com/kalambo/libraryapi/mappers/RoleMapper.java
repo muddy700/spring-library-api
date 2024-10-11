@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.kalambo.libraryapi.entities.Permission;
 import com.kalambo.libraryapi.entities.Role;
-import com.kalambo.libraryapi.responses.IPermissionV3;
+import com.kalambo.libraryapi.responses.IPermissionV2;
 import com.kalambo.libraryapi.responses.IRole;
 import com.kalambo.libraryapi.responses.IRoleV2;
 import com.kalambo.libraryapi.responses.IRoleV3;
@@ -41,9 +41,9 @@ public class RoleMapper {
         return new IRoleV3().setId(role.getId()).setName(role.getName());
     }
 
-    private List<IPermissionV3> mapPermissions(Set<Permission> permissions) {
-        List<IPermissionV3> result = new ArrayList<IPermissionV3>(permissions.size());
-        permissions.forEach(permission -> result.add(permissionMapper.mapToV3(permission)));
+    private List<IPermissionV2> mapPermissions(Set<Permission> permissions) {
+        List<IPermissionV2> result = new ArrayList<IPermissionV2>(permissions.size());
+        permissions.forEach(permission -> result.add(permissionMapper.mapToV2(permission)));
 
         return result;
     }
