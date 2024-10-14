@@ -28,7 +28,7 @@ public class OpenAPIConfiguration {
         localServer.setDescription("Server URL in local environment");
 
         Server productionServer = new Server();
-        productionServer.setUrl("https://library-api.com");
+        productionServer.setUrl("http://54.165.109.130:8000");
         productionServer.setDescription("Server URL in production environment");
 
         // License information
