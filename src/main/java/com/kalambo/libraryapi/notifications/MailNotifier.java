@@ -46,7 +46,7 @@ public class MailNotifier {
     }
 
     public void onUserCreation(User user, String token) {
-        final String verificationUrl = webAppBaseUrl + "/api/v1/auth/verify-email?token=" + token;
+        final String verificationUrl = webAppBaseUrl + "/auth/verify-email?token=" + token;
 
         String message = "Hello " + user.getFullName() + "!, welcome to Library MVP App.<br> <br>";
         message += "Click the link below to verify your email and create your password.<br> <br>";
